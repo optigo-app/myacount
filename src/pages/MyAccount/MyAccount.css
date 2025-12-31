@@ -1,0 +1,73 @@
+.myaccount-wrapper {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.myaccount-tabs {
+  display: flex;
+  gap: clamp(32px, 6vw, 90px);
+  padding: 24px 0px 0px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e5e7;
+  position: sticky !important;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  padding-left: 20%;
+}
+
+.myaccount-tab {
+  position: relative;
+  padding: 10px 0 14px;
+  font-size: 18px;
+  font-weight: 400;
+  color: #6e6e73;
+  background: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.myaccount-tab:hover {
+  color: #1d1d1f;
+}
+
+/* ACTIVE TAB */
+.myaccount-tab.active {
+  color: #1d1d1f;
+  font-weight: 500;
+}
+
+/* UNDERLINE */
+.tab-underline {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 100%;
+  background-color: #000000;
+  border-radius: 1px;
+  animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ================= CONTENT ================= */
+.myaccount-content {
+  padding: 0;
+}
+
+.account-container {
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}

@@ -1,0 +1,245 @@
+.cloud-wrapper-first {
+  display: flex;
+  justify-content: center;
+}
+
+.icloud-storage-wrapper {
+  width: 80%;
+  background: #ffffff;
+}
+
+.icloud-storage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.icloud-storage-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.icloud-storage-header h1 {
+  font-size: 38px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.icloud-storage-header p {
+  font-size: 18px;
+  color: #6e6e73;
+}
+
+.icloud-storage-bar-section {
+  margin-top: 36px;
+}
+
+.storage-bar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.storage-badge {
+  background: #000;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.storage-usage-text {
+  font-size: 22px;
+  color: #6e6e73;
+  display: flex;
+  gap: 6px;
+}
+
+.storage-bar {
+  height: 10px;
+  border-radius: 6px;
+  display: flex;
+  overflow: hidden;
+  background: #f2f2f7;
+}
+
+.storage-bar.blue .storage-used {
+  background: #0071e3;
+}
+
+.storage-bar.purple .storage-used {
+  background: #ff9500;
+}
+
+.storage-system {
+  width: 2%;
+  background: #c7c7cc;
+}
+
+.storage-used {
+  width: 78%;
+  background: #ff9500;
+}
+
+.storage-system {
+  width: 2%;
+  background: #0071e3;
+}
+
+.storage-free {
+  flex: 1;
+}
+
+.icloud-upgrade-card {
+  background: #f5f5f7;
+  border-radius: 14px;
+  padding: 20px;
+  margin: 28px 0 40px;
+}
+
+.icloud-upgrade-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.icloud-upgrade-card p {
+  font-size: 20px;
+  color: #6e6e73;
+}
+
+.icloud-upgrade-card a {
+  font-size: 20px;
+  color: #0071e3;
+}
+
+.storage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.storage-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: center;
+  font-size: 20px;
+}
+
+.storage-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.storage-middle {
+  color: #6e6e73;
+}
+
+.storage-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* DOTS */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dot.orange {
+  background: #ff9500;
+}
+
+.dot.blue {
+  background: #0071e3;
+}
+
+.dot.green {
+  background: #34c759;
+}
+
+.icloud-storage-right {
+  display: flex;
+  flex-direction: column;
+}
+
+.right-spacer {
+  height: 550px;
+}
+
+.right-content {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Divider */
+.vertical-divider {
+  width: 1px;
+  background: #d2d2d7;
+  margin-right: 32px;
+  align-self: stretch;
+  /* 🔥 makes divider visible */
+}
+
+/* Help card */
+.storage-help-card {
+  background: #f5f5f7;
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 580px;
+}
+
+.storage-help-card h3 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.storage-help-card p {
+  font-size: 20px;
+  color: #6e6e73;
+}
+
+.storage-help-card a {
+  font-size: 20px;
+  color: #0071e3;
+}
+
+/* ===== ACCORDION (NEW) ===== */
+
+.storage-accordion {
+  margin-bottom: 32px;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.accordion-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.chevron {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid #1d1d1f;
+  border-bottom: 2px solid #1d1d1f;
+  transform: rotate(-45deg);
+  transition: transform 0.25s ease;
+}
+
+.chevron.open {
+  transform: rotate(45deg);
+}
+
+.accordion-body {
+  margin-top: 24px;
+}
