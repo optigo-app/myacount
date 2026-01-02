@@ -16,9 +16,9 @@
   
   .yourplan-top h1 {
     font-size: 38px;
-    font-weight: 700;
+    font-family: 'SF Pro Bold';
     color: #1d1d1f;
-    margin-bottom: 12px;
+    margin-bottom: 5px;
   }
   
   .yourplan-storage {
@@ -27,13 +27,14 @@
   
   .storage-size {
     font-size: 31px;
-    font-weight: 500;
+    font-family: 'SF Pro Medium';
     display: block;
+    margin-bottom: 0.3%;
   }
   
   .storage-type {
-    font-size: 20px;
-    color: #6e6e73;
+    font-size: 14px;
+    color: #646467b5;
   }
   
   /* GRID: Includes | Divider | Upgrade */
@@ -50,8 +51,8 @@
   
   /* INCLUDES */
   .includes-title {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 22px;
+    font-family: 'SF Pro Bold';
     margin-bottom: 8px;
   }
   
@@ -90,7 +91,7 @@
   
   .upgrade-text h3 {
     font-size: 23px;
-    font-weight: 600;
+    font-family: 'SF Pro Bold';
     margin: 0;
     margin-bottom: 6px;
   }
@@ -122,7 +123,7 @@
   
   .icloudplus-section h2 {
     font-size: 30px;
-    font-weight: 600;
+    font-family: 'SF Pro Bold';
     margin-bottom: 8px;
   }
   

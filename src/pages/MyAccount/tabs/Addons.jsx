@@ -74,7 +74,7 @@ const Addons = () => {
           {/* DESCRIPTION */}
           <div
             style={{
-              fontSize: "20px",
+              fontSize: "12px",
               color: "#6e6e73",
               lineHeight: "1.6",
             }}
@@ -281,7 +281,7 @@ const AddonCard = ({ addon }) => {
         ) : (
           <p
             style={{
-              fontSize: "18px",
+              fontSize: "14px",
               color: "var(--text-secondary)",
               lineHeight: "1.6",
               marginBottom: "16px",
@@ -294,7 +294,7 @@ const AddonCard = ({ addon }) => {
       ) : (
         <p
           style={{
-            fontSize: "18px",
+            fontSize: "14px",
             color: "var(--text-secondary)",
             lineHeight: "1.6",
             marginBottom: "16px",

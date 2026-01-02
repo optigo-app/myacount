@@ -7,33 +7,6 @@
   margin-bottom: 3%;
 }
 
-/* RESET WRAPPER */
-.reset-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 23px;
-}
-
-/* FIRST ROW → 2 COLUMNS */
-.reset-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-/* SECOND ROW → FULL WIDTH */
-.reset-row-full {
-  width: 100%;
-}
-
-/* RESET BOX (already good, just ensure full height feel) */
-.reset-box {
-  background: #f5f5f785;
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid var(--border-light);
-}
-
 .warning-btn {
   margin-top: 16px;
   background: #ff9f0a;
@@ -74,13 +47,18 @@
   border-radius: 10px;
   cursor: pointer;
   font-size: 20px;
-  font-weight: 600;
+  font-family: 'SF Pro Bold';
   color: #6e6e73;
 }
 
 .settings-nav-item.active {
-  background: rgba(0,113,227,0.12);
+  background: #0071e31f;
   color: #0071e3;
+}
+
+.settings-nav-item.nav-danger.active {
+  background: #ff3a302d;
+  color: #ff3b30;
 }
 
 .settings-content {
@@ -88,87 +66,22 @@
   background: #fff;
 }
 
-.profile-card,
-.ip-table {
+.profile-card {
   background: #f5f5f785;
   border-radius: 14px;
   padding: 0px 24px;
   border: 1px solid #e5e5e7;
 }
 
-.reset-box h4 {
-  font-size: 22px;
-  line-height: 16px;
-}
-
-.reset-box p {
-  font-size: 20px;
-  line-height: 22px;
-}
-
-.edit-btn {
-  background: none;
-  border: none;
-  color: #0071e3;
-  font-size: 20px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid #e5e5e7;
-  text-align: left;
-}
-
-/* Reset buttons */
-
-.danger-btn {
-  margin: 16px 0px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  border: none;
-  background: #ff3b30;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 .handle-cancel {
-  margin: 16px 0px;
+  margin: 16px 0px 32px;
   padding: 10px 18px;
   border-radius: 10px;
   border: none;
   color: #000;
   font-size: 18px;
-  font-weight: 600;
+  font-family: 'SF Pro Bold';
   cursor: pointer;
-}
-
-.warning-btn {
-  margin: 16px 0px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  border: none;
-  background: #ff9500;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.danger-btn:hover {
-  background: #e02920;
-}
-
-.warning-btn:hover {
-  background: #e68400;
 }
 
 /* Reset link input */
@@ -194,7 +107,7 @@ th, td {
   border: none;
   background: #0071e3;
   color: #fff;
-  font-weight: 600;
+  font-family: 'SF Pro Bold';
   cursor: pointer;
   white-space: nowrap;
   height: 85%;
@@ -206,69 +119,6 @@ th, td {
 
 .copy-btn:hover {
   background: #005bb5;
-}
-
-/* PROFILE */
-/* PROFILE */
-.profile-container {
-  width: 100%;
-}
-
-.profile-header {
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.profile-edit-btn {
-  background: #0071e3;
-  color: #fff;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-/* CARD */
-.profile-card {
-  background: #f5f5f785;
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  padding: 24px 24px;
-  font-size: 18px;
-}
-
-/* GRID */
-.profile-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px 36px;
-}
-
-.profile-field {
-  display: flex;
-  flex-direction: column;
-}
-
-.profile-field.full-width {
-  grid-column: span 3;
-}
-
-.profile-label {
-  font-size: 18px;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-
-.profile-value {
-  font-size: 20px;
-  font-family: 'SF Pro Bold';
-  font-weight: 600;
-  letter-spacing: 0.8px;
 }
 
 .drawer-overlay {
@@ -299,7 +149,7 @@ th, td {
 }
 
 .drawer-header {
-  padding: 5px 24px;
+  padding: 16px 24px;
   border-bottom: 1px solid #e5e5ea;
   display: flex;
   justify-content: space-between;
@@ -309,7 +159,7 @@ th, td {
 .drawer-header h3 {
   font-size: 24px;
   line-height: 48px;
-  font-weight: 600;
+  font-family: 'SF Pro Bold';
   margin: 0px;
 }
 
@@ -321,7 +171,7 @@ th, td {
 }
 
 .drawer-body {
-  padding: 12px 24px 12px 24px;
+  padding: 24px;
   overflow-y: auto;
   font-size: 16px;
   width: 91.80%;
@@ -334,38 +184,30 @@ th, td {
 
 .drawer-input label {
   display: block;
-  font-size: 18px;
-  color: #6e6e73;
-  margin-bottom: 6px;
+  font-size: 16px;
+  color: #646467b5;
+  margin-bottom: 4px;
 }
 
 .drawer-input input {
   width: 100%;
   padding: 10px 12px;
-  font-size: 18px;
+  font-size: 16px;
   border-radius: 8px;
   border: 1px solid #d2d2d7;
 }
 
 .drawer-save-btn {
-  margin-top: 8px;
+  margin-top: 24px;
   width: 100%;
   padding: 12px;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 18px;
+  font-family: 'SF Pro Bold';
   background: #0071e3;
   color: #fff;
   border: none;
   border-radius: 10px;
   cursor: pointer;
-}
-
-.ip-table th {
-  font-size: 20px;
-}
-
-.ip-table td {
-  font-size: 18px;
 }
 
 .confirm-overlay {
@@ -381,14 +223,14 @@ th, td {
   left: 50%;
   transform: translate(-50%, -50%);
   background: #fff;
-  padding: 18px 24px 18px 24px;
+  padding: 1.5%;
   border-radius: 16px;
-  width: 490px;
+  width: 20%;
   z-index: 1000;
 }
 
 .confirm-modal h3 {
-  margin: 6px 0px;
+  margin: 6px 0px 16px;
   font-size: 22px;
 }
 
@@ -403,8 +245,8 @@ th, td {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 0%;
-  width: 470px;
+  margin-top: 4%;
+  width: 100%;
 }
 
 .confirm-cancel {
@@ -440,8 +282,9 @@ th, td {
 .otp-boxes {
   display: flex;
   gap: 12px;
-  justify-content: center;
-  margin: 10px 0;
+  /* justify-content: center;
+  margin: 10px 0; */
+  padding: 0% 2%;
 }
 
 .otp-box {
@@ -449,7 +292,7 @@ th, td {
   height: 56px;
   text-align: center;
   font-size: 22px;
-  font-weight: 600;
+  font-family: 'SF Pro Bold';
   border-radius: 10px;
   border: 1px solid #d2d2d7;
   outline: none;
@@ -489,7 +332,7 @@ th, td {
 
 .icloud-logo {
   font-size: 32px;
-  font-weight: 700;
+  font-family: 'SF Pro Bold';
   margin-bottom: 56px;
   color: #f5f5f7;
 }
@@ -508,7 +351,7 @@ th, td {
   background: rgba(255,255,255,0.25);
   padding: 8px 10px;
   border-radius: 8px;
-  font-weight: 600;
+  font-family: 'SF Pro Bold';
   color: #f5f5f7;
   font-size: 18px;
 }

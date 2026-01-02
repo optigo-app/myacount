@@ -23,9 +23,9 @@ const CloudStorage = () => {
 
             {/* HEADER */}
             <div className="icloud-storage-header">
-              <h1>Your iCloud Storage</h1>
+              <h1>Your Cloud Storage</h1>
               <p>
-                Use your iCloud storage to keep your most important information—like
+                Use your Cloud storage to keep your most important information—like
                 your photos, files, backups and more—secure, up to date and available
                 across all your devices
               </p>
@@ -54,10 +54,10 @@ const CloudStorage = () => {
               <div className="vertical-divider" />
 
               <div className="storage-help-card">
-                <h3>How to Manage Your iCloud Storage</h3>
+                <h3>How to Manage Your Cloud Storage</h3>
                 <p>
                   Use Continue on Device to send a notification to your Apple devices
-                  that will take you directly to iCloud Storage Settings.
+                  that will take you directly to Cloud Storage Settings.
                 </p>
                 <a href="#">Continue on Device…</a>
               </div>
@@ -76,36 +76,35 @@ const StorageAccordion = ({ title, isOpen, onToggle, color }) => {
     <div className="storage-accordion">
 
       {/* HEADER */}
-      <div className="accordion-header" onClick={onToggle}>
-        <div className="accordion-left">
-          <h3 style={{ fontSize: "22px" }}>{title}</h3>
-          <span className="storage-badge">5 GB</span>
+      <div className="accordion-header-wrapper">
+        <div className="accordion-header" onClick={onToggle}>
+          <div className="accordion-left">
+            <h3>{title}</h3>
+            <span className="storage-badge">5 GB</span>
+          </div>
+
+          <div className={`chevron ${isOpen ? "open" : ""}`} />
         </div>
 
-        <div className={`chevron ${isOpen ? "open" : ""}`} />
-      </div>
+        {/* BAR */}
+        <div className={`storage-bar ${color}`}>
+          <div className="storage-used" />
+          <div className="storage-system" />
+          <div className="storage-free" />
+        </div>
 
-      {/* BAR */}
-      <div className={`storage-bar ${color}`}>
-        <div className="storage-used" />
-        <div className="storage-system" />
-        <div className="storage-free" />
+        <div className="icloud-upgrade-card">
+              <h3>Upgrade to Cloud+</h3>
+              <p>
+                Upgrade to Cloud+ to get even more storage and enhanced privacy
+                features that protect you and your data.
+            </p>
+            <a href="#">Upgrade for ₹75.00/month</a>
+        </div>
       </div>
-
       {/* EXPANDABLE CONTENT */}
       {isOpen && (
         <div className="accordion-body">
-
-          {/* UPGRADE CARD */}
-          <div className="icloud-upgrade-card">
-            <h3>Upgrade to iCloud+</h3>
-            <p>
-              Upgrade to iCloud+ to get even more storage and enhanced privacy
-              features that protect you and your data.
-            </p>
-            <a href="#">Upgrade for ₹75.00/month</a>
-          </div>
-
           {/* STORAGE LIST */}
           <div className="storage-list">
             <StorageRow label="Documents" size="3.9 GB" dot="orange" />
@@ -121,7 +120,6 @@ const StorageAccordion = ({ title, isOpen, onToggle, color }) => {
 const StorageRow = ({ label, size, dot }) => (
   <div className="storage-row">
     <div className="storage-left">
-      <span className={`icon ${label.toLowerCase()}`} />
       <span>{label}</span>
     </div>
     <div className="storage-middle">All files</div>

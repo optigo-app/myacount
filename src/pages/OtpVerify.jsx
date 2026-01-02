@@ -4,10 +4,15 @@ import "./OtpVerify.css";
 import slide1 from "../assets/otp-slider/slide1.png";
 import slide2 from "../assets/otp-slider/slide2.png";
 import slide3 from "../assets/otp-slider/slide3.png";
+import { useCookieFromCN } from "../hooks/useCookie";
+import { useTrackURL } from "../hooks/useTrackURL";
+import { getCookieByName } from "../utils/cookies";
 
 const images = [slide1, slide2, slide3];
 
 const OtpVerify = () => {
+  // const { cookieName, cookieValue, hasCookie } = useCookieFromCN("CN");
+
   const [error, setError] = useState("");
   const [activeImage, setActiveImage] = useState(0);
   const navigate = useNavigate();
@@ -26,6 +31,54 @@ const OtpVerify = () => {
     }, 3500);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (step !== "verify") return;
+    if (canResend) return; 
+
+    if (resendTimer === 0) {
+      setCanResend(true);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setResendTimer((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [resendTimer, step, canResend]);
+
+
+  useEffect(() => {
+    sessionStorage.removeItem("otp_verified");
+    if (isOtpVerfied === "true") {
+      navigate('/')
+    }
+  }, []);
+
+  const { fullURL, CN } = useTrackURL();
+
+  useEffect(() => {
+    console.log("Full URL:", fullURL);
+    console.log("CN from URL:", CN);
+
+    if (CN) {
+      const cookieValue = getCookieByName(CN);
+      console.log("Cookie Value:", cookieValue);
+    }
+  }, [CN, fullURL]);
+
+  if (!CN) {
+    return <div>Invalid request</div>;
+  }
+  
+  // if (!cookieName) {
+  //   return <div>Invalid request</div>;
+  // }
+
+  // if (!hasCookie) {
+  //   return <div>Session expired or invalid</div>;
+  // }
 
   const handleChange = (value, index) => {
     if (index < 2) return;
@@ -113,30 +166,6 @@ const OtpVerify = () => {
     setResendTimer(RESEND_TIME);
     setError("");
   };
-  
-  useEffect(() => {
-    if (step !== "verify") return;
-    if (canResend) return; 
-
-    if (resendTimer === 0) {
-      setCanResend(true);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setResendTimer((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [resendTimer, step, canResend]);
-
-
-  useEffect(() => {
-    sessionStorage.removeItem("otp_verified");
-    if (isOtpVerfied === "true") {
-      navigate('/')
-    }
-  }, []);
 
   if (isOtpVerfied === "true") {
     return <Navigate to={"/"} />

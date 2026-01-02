@@ -1,0 +1,28 @@
+.ip-table {
+    background: #f5f5f785;
+    border-radius: 14px;
+    padding: 0px 24px;
+    border: 1px solid #e5e5e7;
+  }
+  
+  .ip-table th {
+    font-size: 18px;
+    font-family: 'SF Pro Bold';
+  }
+  
+  .ip-table td {
+    font-size: 16x;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th,
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e5e7;
+    text-align: left;
+  }
+  
