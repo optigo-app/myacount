@@ -2,33 +2,47 @@ import React, { useEffect, useState } from "react";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import MyAccount from "./pages/MyAccount/MyAccount";
 import OtpVerify from "./pages/OtpVerify";
+import { bootstrapCNFromURL } from "./utils/cnBootstrap";
 
 const App = () => {
   const [bootstrapped, setBootstrapped] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
-
+  
   useEffect(() => {
-    // 🔑 CN BOOTSTRAP (ONLY ONCE)
-    if (!sessionStorage.getItem("__CN_BOOTSTRAPPED__")) {
-      // 1️⃣ Try URL
-      const { search, hash } = window.location;
-      const params = new URLSearchParams(
-        search || hash.replace("#", "?")
-      );
-      const CN = params.get("CN");
-
-      if (CN) {
-        sessionStorage.setItem("CN", CN);
-      }
-
-      sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
-    }
-
-    const otp = sessionStorage.getItem("otp_verified") === "true";
-    setIsOtpVerified(otp);
-
-    setBootstrapped(true);
+      console.log("🚀 App bootstrap started");
+  
+      // 🔹 CN → Cookie → SessionStorage
+      bootstrapCNFromURL();
+  
+      // 🔹 OTP bootstrap
+      const otp = sessionStorage.getItem("otp_verified") === "true";
+      setIsOtpVerified(otp);
+  
+      setBootstrapped(true);
   }, []);
+
+  // useEffect(() => {
+  //   console.log("🚀 App bootstrap started");
+  //   if (!sessionStorage.getItem("__CN_BOOTSTRAPPED__")) {
+  //     // 1️⃣ Try URL
+  //     const { search, hash } = window.location;
+  //     const params = new URLSearchParams(
+  //       search || hash.replace("#", "?")
+  //     );
+  //     const CN = params.get("CN");
+
+  //     if (CN) {
+  //       sessionStorage.setItem("CN", CN);
+  //     }
+
+  //     sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
+  //   }
+
+  //   const otp = sessionStorage.getItem("otp_verified") === "true";
+  //   setIsOtpVerified(otp);
+
+  //   setBootstrapped(true);
+  // }, []);
 
   if (!bootstrapped) {
     return <div>Initializing…</div>;
