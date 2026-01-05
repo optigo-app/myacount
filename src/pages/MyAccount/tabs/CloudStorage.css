@@ -189,13 +189,14 @@
 /* ===== ACCORDION (NEW) ===== */
 
 .storage-accordion {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .accordion-all-wrapper {
-  border: 1px solid#f5f5f7a8;
+  border: 1px solid#f1f1f1;
+  /* border: 1px solid#f5f5f7a8; */
   /* background: #f5f5f7a8; */
-  padding: 2%;
+  /* padding: 2%; */
   border-radius: 14px;
 }
 
@@ -301,4 +302,5 @@
 
 .accordion-body {
   margin-top: 24px;
+  padding-bottom: 1.5%;
 }

@@ -229,18 +229,18 @@ const Profile = ({ setOpenEditProfile }) => {
 
             {activeSection && (
                 <div className="profile-section-header">
-                    <h2
-                    style={{ color: SECTION_META[activeSection].color }}
-                    >
-                    {SECTION_META[activeSection].title}
-                    </h2>
-
                     <button
-                    className="profile-section-close"
-                    onClick={closeSection}
+                        className="profile-section-back"
+                        onClick={closeSection}
                     >
-                    ✕
+                        ←
                     </button>
+
+                    <h2
+                        style={{ color: SECTION_META[activeSection].color }}
+                    >
+                        {SECTION_META[activeSection].title}
+                    </h2>
                 </div>
             )}
 

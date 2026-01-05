@@ -109,8 +109,7 @@
 .profile-section-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 16px 0px 16px 8px;
+    padding: 16px 0px 16px 0px;
     border-bottom: 1px solid #e5e5e7;
     margin-bottom: 8px;
   }
@@ -128,16 +127,13 @@
     color: #ff3b30;
   }
   
-  .profile-section-close {
+  .profile-section-back {
     background: none;
     border: none;
-    font-size: 26px;
+    font-size: 22px;
+    color: #75757e;
     cursor: pointer;
-    color: #6e6e73;
-  }
-  
-  .profile-section-close:hover {
-    color: #000;
+    padding-right: 1.2%;
   }
 
   .profile-section-body {

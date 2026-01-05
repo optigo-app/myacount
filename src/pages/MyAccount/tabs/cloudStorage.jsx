@@ -3,7 +3,7 @@ import "./CloudStorage.css";
 
 const CloudStorage = () => {
   const [openSection, setOpenSections] = useState({
-    data: true,
+    data: false,
     files: false,
   });  
 
@@ -114,7 +114,7 @@ const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free })
           </div>
 
           <div className="accrodian-last" onClick={onToggle}>
-            <div className="storage-free">Show in Details…</div>
+            <div className="storage-free">View Details</div>
             <div className={`chevron ${isOpen ? "open" : ""}`} />
           </div>
         </div>
