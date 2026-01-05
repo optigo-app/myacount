@@ -1,23 +1,22 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import "./OtpVerify.css";
 import slide1 from "../assets/otp-slider/slide1.png";
 import slide2 from "../assets/otp-slider/slide2.png";
 import slide3 from "../assets/otp-slider/slide3.png";
-import { useCookieFromCN } from "../hooks/useCookie";
-import { useTrackURL } from "../hooks/useTrackURL";
-import { getCookieByName } from "../utils/cookies";
 
 const images = [slide1, slide2, slide3];
 
-const OtpVerify = () => {
-  // const { cookieName, cookieValue, hasCookie } = useCookieFromCN("CN");
+const OtpVerify = ({ onOtpSuccess }) => {
+  const CN = sessionStorage.getItem("CN");
+  // console.log("CN available in OtpVerify:", CN);
 
   const [error, setError] = useState("");
   const [activeImage, setActiveImage] = useState(0);
   const navigate = useNavigate();
   const [step, setStep] = useState("send");
-  const isOtpVerfied = sessionStorage.getItem('otp_verified');
+  // const isOtpVerfied = sessionStorage.getItem('otp_verified');
   const OTP_LENGTH = 6;
   const [otp, setOtp] = useState(["A", "-", "", "", "", ""]);
   const inputsRef = useRef([]);
@@ -47,38 +46,6 @@ const OtpVerify = () => {
 
     return () => clearTimeout(timer);
   }, [resendTimer, step, canResend]);
-
-
-  useEffect(() => {
-    sessionStorage.removeItem("otp_verified");
-    if (isOtpVerfied === "true") {
-      navigate('/')
-    }
-  }, []);
-
-  const { fullURL, CN } = useTrackURL();
-
-  useEffect(() => {
-    console.log("Full URL:", fullURL);
-    console.log("CN from URL:", CN);
-
-    if (CN) {
-      const cookieValue = getCookieByName(CN);
-      console.log("Cookie Value:", cookieValue);
-    }
-  }, [CN, fullURL]);
-
-  if (!CN) {
-    return <div>Invalid request</div>;
-  }
-  
-  // if (!cookieName) {
-  //   return <div>Invalid request</div>;
-  // }
-
-  // if (!hasCookie) {
-  //   return <div>Session expired or invalid</div>;
-  // }
 
   const handleChange = (value, index) => {
     if (index < 2) return;
@@ -128,15 +95,19 @@ const OtpVerify = () => {
   };
 
   const handleVerify = () => {
-    const enteredOtp = otp.slice(2).join(""); // only last 4 digits
+    const enteredOtp = otp.slice(2).join("");
   
     if (enteredOtp === "1234") {
       sessionStorage.setItem("otp_verified", "true");
+  
+      // console.log("[OtpVerify] OTP verified, updating App state");
+  
+      onOtpSuccess();
       navigate("/", { replace: true });
     } else {
       setError("Incorrect OTP. Please try again.");
     }
-  };  
+  };           
 
   const captions = [
     {
@@ -166,10 +137,6 @@ const OtpVerify = () => {
     setResendTimer(RESEND_TIME);
     setError("");
   };
-
-  if (isOtpVerfied === "true") {
-    return <Navigate to={"/"} />
-  }
 
   return (
     <div className="otp-page">

@@ -1,7 +1,7 @@
 /* PAGE */
 .otp-page {
     display: flex;
-    height: 100vh;
+    height: 100%;
     background: #ffffff;
     font-family: "Nunito", sans-serif;
   }
@@ -116,7 +116,7 @@
   /* RIGHT SIDE */
 .otp-right {
     width: 50%;
-    height: 100vh;
+    height: 100%;
     background:
     linear-gradient(
       180deg,

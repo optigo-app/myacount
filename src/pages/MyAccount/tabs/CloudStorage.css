@@ -86,11 +86,6 @@
   background: #0071e3;
 }
 
-.storage-free {
-  flex: 1;
-  background: #c7c7cc;
-}
-
 .storage-list {
   display: flex;
   flex-direction: column;
@@ -197,8 +192,21 @@
   margin-bottom: 32px;
 }
 
+.accordion-all-wrapper {
+  border: 1px solid#f5f5f7a8;
+  /* background: #f5f5f7a8; */
+  padding: 2%;
+  border-radius: 14px;
+}
+
 .accordion-header-wrapper {
-  background: #f5f5f7;
+  background: #f5f5f7a8;
+  padding: 2%;
+  border-radius: 14px;
+}
+
+.accordion-bar-wrapper {
+  background: #ffffff;
   padding: 2%;
   border-radius: 14px;
 }
@@ -220,6 +228,33 @@
   font-size: 24px;
   margin: 5% 0%;
   font-family: 'SF Pro Bold';
+}
+
+.storage-summary {
+  font-size: 16px;
+  color: #6e6e73;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.storage-free {
+  flex: 1;
+  color: #6e6e73;
+  font-family: 'SF Pro Bold';
+  font-size: 16px;
+}
+
+.storage-used-text {
+  color: #1d1d1f;
+  font-family: 'SF Pro Bold';
+  font-size: 16px;
+}
+
+.dot-separator {
+  font-size: 40px;
+  /* line-height: 1; */
+  color: #6e6e73;
 }
 
 .icloud-upgrade-card {
@@ -245,6 +280,10 @@
   font-size: 18px;
   color: #0071e3;
   margin: 0% 0.1%;
+}
+.accrodian-last {
+  display: flex;
+  justify-content: space-between;
 }
 
 .chevron {

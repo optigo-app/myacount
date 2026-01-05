@@ -19,7 +19,7 @@ const tabs = [
 const MyAccount = () => {
   const [activeTab, setActiveTab] = useState("your-plan");
   const naviagte =  useNavigate();
-  const isOtpVerfied =  sessionStorage.getItem('otp_verified');
+  console.log("[MyAccount] render");
 
   const renderContent = () => {
     switch (activeTab) {
@@ -37,10 +37,6 @@ const MyAccount = () => {
         return null;
     }
   };
-
-  if(isOtpVerfied !== "true"){
-    return <Navigate to={"/otp-verify"} />
-  }
   
 
   return (
