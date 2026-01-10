@@ -2,57 +2,44 @@ import { getCookieByName } from "./cookies";
 import { decodeCookieValue } from "./decodeCookieValue";
 
 export function bootstrapCNFromURL() {
-  // prevent re-running
-  if (sessionStorage.getItem("__CN_BOOTSTRAPPED__") === "true") {
-    return;
-  }
+  if (sessionStorage.getItem("__CN_BOOTSTRAPPED__") === "true") return;
 
   const { search, hash } = window.location;
-
-  const params = new URLSearchParams(
-    search || hash.replace("#", "?")
-  );
-
+  const params = new URLSearchParams(search || hash.replace("#", "?"));
   const cnFromUrl = params.get("CN");
+
   if (!cnFromUrl) {
-    console.log("[CN] CN not found in URL");
+    console.warn("[CN] CN not found in URL");
     sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
     return;
   }
 
-  console.log("[CN] Raw CN from URL:", cnFromUrl);
-
-  let decodedCookieName;
+  let cookieName;
   try {
-    decodedCookieName = atob(cnFromUrl);
-  } catch (err) {
-    console.error("[CN] Failed to decode CN:", err);
+    cookieName = atob(cnFromUrl);
+  } catch {
+    console.error("[CN] Invalid CN base64");
     sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
     return;
   }
 
-  console.log("[CN] Decoded cookie name:", decodedCookieName);
-
-  const rawCookieValue = getCookieByName(decodedCookieName);
+  const rawCookieValue = getCookieByName(cookieName);
   if (!rawCookieValue) {
-    console.warn("[CN] Cookie not found:", decodedCookieName);
+    console.warn("[CN] Cookie not found:", cookieName);
     sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
     return;
   }
 
-  const decodedCookieObject = decodeCookieValue(rawCookieValue);
-  if (!decodedCookieObject) {
-    console.error("[CN] Failed to decode cookie value");
-    sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
-    return;
+  // ✅ store RAW cookie exactly as-is
+  sessionStorage.setItem(cookieName, rawCookieValue);
+
+  // ✅ decode ONLY here
+  const decoded = decodeCookieValue(rawCookieValue);
+  if (decoded) {
+    console.log("decoded", decoded);
+    // you can use this object where needed
+    // sessionStorage.setItem("__DECODED_CN_DATA__", JSON.stringify(decoded));
   }
-
-  sessionStorage.setItem(
-    decodedCookieName,
-    JSON.stringify(decodedCookieObject)
-  );
-
-  console.log("[CN] Decoded cookie stored in sessionStorage", decodedCookieObject);
 
   sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
 }

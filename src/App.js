@@ -4,6 +4,7 @@ import MyAccount from "./pages/MyAccount/MyAccount";
 import OtpVerify from "./pages/OtpVerify";
 import { bootstrapCNFromURL } from "./utils/cnBootstrap";
 import { getIpAddress } from "./utils/getIpAddress";
+import { devBootstrap } from "./utils/devBootstrap";
 
 const App = () => {
   const [bootstrapped, setBootstrapped] = useState(false);
@@ -11,17 +12,18 @@ const App = () => {
   const [clientIp, setClientIp] = useState("");
   
   useEffect(() => {
-    const bootstrap = async () => {
-      // console.log("🚀 App bootstrap started");
+    devBootstrap();
+    bootstrapCNFromURL();
+  }, []);
 
-      // CN bootstrap
+  useEffect(() => {
+    const bootstrap = async () => {
+
       bootstrapCNFromURL();
 
-      // Fetch IP ONCE
       const ip = await getIpAddress();
       setClientIp(ip || "");
 
-      // OTP bootstrap
       const otp = sessionStorage.getItem("otp_verified") === "true";
       setIsOtpVerified(otp);
 
@@ -30,29 +32,6 @@ const App = () => {
 
     bootstrap();
   }, []);
-
-  // useEffect(() => {
-  //   console.log("🚀 App bootstrap started");
-  //   if (!sessionStorage.getItem("__CN_BOOTSTRAPPED__")) {
-  //     // 1️⃣ Try URL
-  //     const { search, hash } = window.location;
-  //     const params = new URLSearchParams(
-  //       search || hash.replace("#", "?")
-  //     );
-  //     const CN = params.get("CN");
-
-  //     if (CN) {
-  //       sessionStorage.setItem("CN", CN);
-  //     }
-
-  //     sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
-  //   }
-
-  //   const otp = sessionStorage.getItem("otp_verified") === "true";
-  //   setIsOtpVerified(otp);
-
-  //   setBootstrapped(true);
-  // }, []);
 
   if (!bootstrapped) {
     return <div>Initializing…</div>;
@@ -81,57 +60,3 @@ const App = () => {
 };
 
 export default App;
-
-
-
-// import React, { useEffect, useState } from "react";
-// import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-// import MyAccount from "./pages/MyAccount/MyAccount";
-// import OtpVerify from "./pages/OtpVerify";
-
-// const App = () => {
-//   const [bootstrapped, setBootstrapped] = useState(false);
-
-//   useEffect(() => {
-//     // if (!sessionStorage.getItem("__APP_STARTED__")) {
-//     //   sessionStorage.removeItem("otp_verified");
-//     //   sessionStorage.setItem("__APP_STARTED__", "true");
-//     // }
-
-//     // CN bootstrap
-//     const { search, hash } = window.location;
-//     const params = new URLSearchParams(
-//       search || hash.replace("#", "?")
-//     );
-//     const CN = params.get("CNnnnnnnnn");
-//     if (CN) {
-//       sessionStorage.setItem("CNnnnnnnnnnn", CN);
-//     }
-
-//     setBootstrapped(true);
-//   }, []);
-
-//   if (!bootstrapped) {
-//     return <div>Initializing…</div>;
-//   }
-
-//   const isOtpVerified = sessionStorage.getItem("otp_verified") === "true";
-
-//   return (
-//     <BrowserRouter basename="/myaccount">
-//       <Routes>
-//         <Route
-//           path="/"
-//           element={
-//             isOtpVerified
-//               ? <MyAccount />
-//               : <Navigate to="/otp-verify" replace />
-//           }
-//         />
-//         <Route path="/otp-verify" element={<OtpVerify />} />
-//       </Routes>
-//     </BrowserRouter>
-//   );
-// };
-
-// export default App;

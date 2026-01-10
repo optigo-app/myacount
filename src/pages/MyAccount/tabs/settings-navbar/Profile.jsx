@@ -9,7 +9,7 @@ const FormField = React.memo(function FormField({
     value,
     onChange,
     error,
-    type = "text"
+    type = "text",
   }) {
     return (
       <div className="profile-form-field">
@@ -73,7 +73,7 @@ const validateSection = (data) => {
     return errors;
 };  
   
-const Profile = ({ setOpenEditProfile }) => {
+const Profile = ({ setOpenEditProfile, rcvData }) => {
     const [activeSection, setActiveSection] = useState(null);
     const [profileSectionsData, setProfileSectionsData] = useState({
         management: {
@@ -108,7 +108,9 @@ const Profile = ({ setOpenEditProfile }) => {
         }
     });
     const [fieldErrors, setFieldErrors] = useState({});
-
+    // const rcvDataFr = rcvData;
+    // console.log("rcvDataFr",rcvDataFr);
+    
     const STORAGE_KEY = "optigo_profile_sections";
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -170,17 +172,17 @@ const Profile = ({ setOpenEditProfile }) => {
                         </div>
 
                         <div className="profile-grid">
-                            <ProfileField label="Full Name" value="Smith Martinez" />
-                            <ProfileField label="Company" value="Optigo Head Office" />
-                            <ProfileField label="Default Currency" value="INR" />
+                            <ProfileField label="Full Name" value={rcvData.basicinfo_firstname + " " + rcvData.basicinfo_lastname || ""} />
+                            <ProfileField label="Company" value={rcvData.cmpinfo_companyname || ""} />
+                            <ProfileField label="Default Currency" value={rcvData.Country_CurrencyCode || ""} />
 
-                            <ProfileField label="Mobile No" value="9510213581" />
-                            <ProfileField label="Office No" value="9510213581" />
-                            <ProfileField label="Email" value="support@orail.in" />
+                            <ProfileField label="Mobile No" value={rcvData.basicinfo_mobileno || ""} />
+                            <ProfileField label="Office No" value={rcvData.cmpinfo_officeph || ""} />
+                            <ProfileField label="Email" value={rcvData.basicinfo_email || ""} />
 
                             <ProfileField
                                 label="Address"
-                                value="g-20 ITC Building, Majura Gate, Surat, Gujarat - 395005"
+                                value={rcvData.cmpinfo_addressline1 + " " + rcvData.cmpinfo_addressline2 + " " + rcvData.cmpinfo_state + "  " + rcvData.cmpinfo_postalcode || ""}
                                 full
                             />
                         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import YourPlan from "./tabs/yourPlan";
 import CloudStorage from "./tabs/cloudStorage";
 import Addons from "./tabs/Addons";
@@ -6,7 +6,7 @@ import ChangeHistory from "./tabs/changeHistory";
 import Settings from "./tabs/Settings";
 import UserLogin from "./tabs/userlogin";
 import "./MyAccount.css";
-import { Navigate, useNavigate } from "react-router-dom";
+import { getMyAccountInfo } from "../../api/myAccountApi";
 
 const tabs = [
   { id: "your-plan", label: "Your Plan" },
@@ -18,10 +18,20 @@ const tabs = [
 
 const MyAccount = ({ clientIp }) => {
   const [activeTab, setActiveTab] = useState("your-plan");
-  const naviagte =  useNavigate();
-  console.log("[MyAccount] render");
-  console.log("[MyAccount] clientIp =", clientIp);
+  const [settingdata, setSettingData] = useState([]);
 
+  useEffect(() => {
+    if (!clientIp) return;
+
+    getMyAccountInfo(clientIp)
+      .then(res => {
+        setSettingData(res.Data);
+      })
+      .catch(err => {
+        console.error("API error:", err.message);
+      });
+  }, [clientIp]);
+  
   const renderContent = () => {
     switch (activeTab) {
       case "your-plan":
@@ -33,7 +43,7 @@ const MyAccount = ({ clientIp }) => {
       // case "change-history":
       //   return <ChangeHistory />;
       case "settings":
-        return <Settings clientIp={clientIp} />;
+        return <Settings clientIp={clientIp} settingdata={settingdata} />;
       default:
         return null;
     }

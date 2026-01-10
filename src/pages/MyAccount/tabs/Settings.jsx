@@ -4,7 +4,7 @@ import ResetAccount from "./settings-navbar/ResetAccount";
 import Profile from "./settings-navbar/Profile";
 import IPSecurity from "./settings-navbar/IPSecurity";
 
-const Settings = ({ clientIp }) => {
+const Settings = ({ clientIp, settingdata }) => {
   const [active, setActive] = useState("profile");
   const [openEditProfile, setOpenEditProfile] = useState(false);
   const [showIpPopup, setShowIpPopup] = useState(false);
@@ -15,16 +15,20 @@ const Settings = ({ clientIp }) => {
   const [ipError, setIpError] = useState("");
   const ipRegex =
     /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
+  // console.log("clientIp",clientIp);
 
     useEffect(() => {
       if (clientIp) {
         setIpForm((prev) => ({
           ...prev,
-          ip: clientIp, // 👈 prefill detected IP
+          ip: clientIp,
         }));
       }
     }, [clientIp]);
     
+    const rcvData = settingdata?.rd?.[0];
+    console.log("rcvData", rcvData);
+
     const NavItem = ({ label, active, onClick, variant }) => (
       <div
         className={`settings-nav-item 
@@ -76,7 +80,7 @@ const Settings = ({ clientIp }) => {
         {/* RIGHT CONTENT */}
         <div className="settings-content">
           {active === "profile" && (
-            <Profile setOpenEditProfile={setOpenEditProfile} />
+            <Profile setOpenEditProfile={setOpenEditProfile} rcvData={rcvData} />
           )}
           {active === "ip" && (
             <IPSecurity setShowIpPopup={setShowIpPopup} />
@@ -105,16 +109,17 @@ const Settings = ({ clientIp }) => {
               </div>
 
               <div className="drawer-body">
-                <DrawerInput label="First Name" value="Smith" />
-                <DrawerInput label="Last Name" value="Martinez" />
-                <DrawerInput label="Company" value="Optigo Head Office" />
-                <DrawerInput label="Email" value="support@orail.in" />
-                <DrawerInput label="Mobile No" value="9510213581" />
-                <DrawerInput label="Office No" value="9510213581" />
-                <DrawerInput label="Address" value="g-20 ITC Building, Majura Gate, Surat" />
-                <DrawerInput label="State" value="Gujarat" />
-                <DrawerInput label="Zip" value="395005" />
-                <DrawerInput label="Default Currency" value="INR" />
+                <DrawerInput label="First Name" value={rcvData.basicinfo_firstname || ""} />
+                <DrawerInput label="Last Name" value={rcvData.basicinfo_lastname || ""} />
+                <DrawerInput label="Company" value={rcvData.cmpinfo_companyname || ""} />
+                <DrawerInput label="Email" value={rcvData.basicinfo_email || ""} />
+                <DrawerInput label="Mobile No" value={rcvData.basicinfo_mobileno || ""} />
+                <DrawerInput label="Office No" value={rcvData.cmpinfo_officeph || ""} />
+                <DrawerInput label="Address1" value={rcvData.cmpinfo_addressline1 || ""} />
+                <DrawerInput label="Address2" value={rcvData.cmpinfo_addressline2 || ""} />
+                <DrawerInput label="State" value={rcvData.cmpinfo_state || ""} />
+                <DrawerInput label="Zip" value={rcvData.cmpinfo_postalcode || ""} />
+                <DrawerInput label="Default Currency" value={rcvData.Country_CurrencyCode || ""} />
 
                 <button className="drawer-save-btn">
                   Save Changes
