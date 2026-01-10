@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Settings.css";
 import ResetAccount from "./settings-navbar/ResetAccount";
 import Profile from "./settings-navbar/Profile";
 import IPSecurity from "./settings-navbar/IPSecurity";
 
-const Settings = () => {
+const Settings = ({ clientIp }) => {
   const [active, setActive] = useState("profile");
   const [openEditProfile, setOpenEditProfile] = useState(false);
   const [showIpPopup, setShowIpPopup] = useState(false);
@@ -16,6 +16,15 @@ const Settings = () => {
   const ipRegex =
     /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
 
+    useEffect(() => {
+      if (clientIp) {
+        setIpForm((prev) => ({
+          ...prev,
+          ip: clientIp, // 👈 prefill detected IP
+        }));
+      }
+    }, [clientIp]);
+    
     const NavItem = ({ label, active, onClick, variant }) => (
       <div
         className={`settings-nav-item 

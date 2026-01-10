@@ -3,22 +3,32 @@ import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import MyAccount from "./pages/MyAccount/MyAccount";
 import OtpVerify from "./pages/OtpVerify";
 import { bootstrapCNFromURL } from "./utils/cnBootstrap";
+import { getIpAddress } from "./utils/getIpAddress";
 
 const App = () => {
   const [bootstrapped, setBootstrapped] = useState(false);
   const [isOtpVerified, setIsOtpVerified] = useState(false);
+  const [clientIp, setClientIp] = useState("");
   
   useEffect(() => {
-      console.log("🚀 App bootstrap started");
-  
-      // 🔹 CN → Cookie → SessionStorage
+    const bootstrap = async () => {
+      // console.log("🚀 App bootstrap started");
+
+      // CN bootstrap
       bootstrapCNFromURL();
-  
-      // 🔹 OTP bootstrap
+
+      // Fetch IP ONCE
+      const ip = await getIpAddress();
+      setClientIp(ip || "");
+
+      // OTP bootstrap
       const otp = sessionStorage.getItem("otp_verified") === "true";
       setIsOtpVerified(otp);
-  
+
       setBootstrapped(true);
+    };
+
+    bootstrap();
   }, []);
 
   // useEffect(() => {
@@ -57,7 +67,7 @@ const App = () => {
           index
           element={
             isOtpVerified
-              ? <MyAccount />
+              ? <MyAccount clientIp={clientIp} />
               : <Navigate to="/otp-verify" replace />
           }
         />

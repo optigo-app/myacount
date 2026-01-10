@@ -1,4 +1,5 @@
 import { getCookieByName } from "./cookies";
+import { decodeCookieValue } from "./decodeCookieValue";
 
 export function bootstrapCNFromURL() {
   // prevent re-running
@@ -32,20 +33,26 @@ export function bootstrapCNFromURL() {
 
   console.log("[CN] Decoded cookie name:", decodedCookieName);
 
-  const cookieValue = getCookieByName(decodedCookieName);
-  if (!cookieValue) {
+  const rawCookieValue = getCookieByName(decodedCookieName);
+  if (!rawCookieValue) {
     console.warn("[CN] Cookie not found:", decodedCookieName);
     sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
     return;
   }
 
-  // 🔥 Store EXACT same key–value pair
-  sessionStorage.setItem(decodedCookieName, cookieValue);
+  const decodedCookieObject = decodeCookieValue(rawCookieValue);
+  if (!decodedCookieObject) {
+    console.error("[CN] Failed to decode cookie value");
+    sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
+    return;
+  }
 
-  console.log("[CN] Cookie copied to sessionStorage:", {
-    key: decodedCookieName,
-    value: cookieValue,
-  });
+  sessionStorage.setItem(
+    decodedCookieName,
+    JSON.stringify(decodedCookieObject)
+  );
+
+  console.log("[CN] Decoded cookie stored in sessionStorage", decodedCookieObject);
 
   sessionStorage.setItem("__CN_BOOTSTRAPPED__", "true");
 }

@@ -16,10 +16,11 @@ const tabs = [
   { id: "settings", label: "User & Security" },
 ];
 
-const MyAccount = () => {
+const MyAccount = ({ clientIp }) => {
   const [activeTab, setActiveTab] = useState("your-plan");
   const naviagte =  useNavigate();
   console.log("[MyAccount] render");
+  console.log("[MyAccount] clientIp =", clientIp);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -32,7 +33,7 @@ const MyAccount = () => {
       // case "change-history":
       //   return <ChangeHistory />;
       case "settings":
-        return <Settings />;
+        return <Settings clientIp={clientIp} />;
       default:
         return null;
     }
