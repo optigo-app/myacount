@@ -158,7 +158,8 @@ const OtpVerify = ({ onOtpSuccess }) => {
               </p>
 
               <div className="otp-mobile">
-                +91 98744 53581
+                +91 XXXXX X3581
+                {/* +91 98744 53581 */}
               </div>
 
               <button className="otp-btn" onClick={handleSendOtp}>

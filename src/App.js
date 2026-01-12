@@ -5,6 +5,7 @@ import OtpVerify from "./pages/OtpVerify";
 import { bootstrapCNFromURL } from "./utils/cnBootstrap";
 import { getIpAddress } from "./utils/getIpAddress";
 import { devBootstrap } from "./utils/devBootstrap";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const [bootstrapped, setBootstrapped] = useState(false);
@@ -39,23 +40,26 @@ const App = () => {
 
   // console.log("[App] isOtpVerified =", isOtpVerified);
 
-  return (
-    <HashRouter>
-      <Routes>
-        <Route
-          index
-          element={
-            isOtpVerified
-              ? <MyAccount clientIp={clientIp} />
-              : <Navigate to="/otp-verify" replace />
-          }
-        />
-        <Route
-          path="otp-verify"
-          element={<OtpVerify onOtpSuccess={() => setIsOtpVerified(true)} />}
-        />
-      </Routes>
-    </HashRouter>
+  return ( 
+    <>
+      <HashRouter>
+        <Routes>
+          <Route
+            index
+            element={
+              isOtpVerified
+                ? <MyAccount clientIp={clientIp} />
+                : <Navigate to="/otp-verify" replace />
+            }
+          />
+          <Route
+            path="otp-verify"
+            element={<OtpVerify onOtpSuccess={() => setIsOtpVerified(true)} />}
+          />
+        </Routes>
+      </HashRouter>
+      <Toaster position="top-right" />
+    </>
   );
 };
 

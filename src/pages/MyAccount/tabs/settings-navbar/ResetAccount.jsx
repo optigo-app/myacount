@@ -261,7 +261,8 @@ const ResetAccount = ({ setConfirmAction }) => {
                 </p>
 
                 <p className="reset-mobile">
-                    +91 95102 13581
+                    +91 XXXXX X3581
+                    {/* +91 95102 13581 */}
                 </p>
 
                 {/* <button

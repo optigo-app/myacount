@@ -162,7 +162,7 @@
 
 /* Help card */
 .storage-help-card {
-  background: #f5f5f7;
+  background: #f5f5f7a8; /* f5f5f7 */
   border-radius: 14px;
   padding: 24px;
   max-width: 580px;

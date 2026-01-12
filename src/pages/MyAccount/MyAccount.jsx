@@ -7,6 +7,7 @@ import Settings from "./tabs/Settings";
 import UserLogin from "./tabs/userlogin";
 import "./MyAccount.css";
 import { getMyAccountInfo } from "../../api/myAccountApi";
+import { decodeCookieValue } from "../../utils/decodeCookieValue";
 
 const tabs = [
   { id: "your-plan", label: "Your Plan" },
@@ -18,32 +19,31 @@ const tabs = [
 
 const MyAccount = ({ clientIp }) => {
   const [activeTab, setActiveTab] = useState("your-plan");
-  const [settingdata, setSettingData] = useState([]);
+  const [LUId, setLUId] = useState(null);
 
   useEffect(() => {
-    if (!clientIp) return;
+    const sessionKeys = Object.keys(sessionStorage);
+    const cookieKey = sessionKeys.find(k => k.startsWith("RDSD_"));
+    if (!cookieKey) return;
 
-    getMyAccountInfo(clientIp)
-      .then(res => {
-        setSettingData(res.Data);
-      })
-      .catch(err => {
-        console.error("API error:", err.message);
-      });
-  }, [clientIp]);
+    const decoded = decodeCookieValue(sessionStorage.getItem(cookieKey));
+    if (decoded?.LUId) {
+      setLUId(decoded.LUId);
+    }
+  }, []);
   
   const renderContent = () => {
     switch (activeTab) {
       case "your-plan":
         return <YourPlan />;
       case "your-storage":
-        return <CloudStorage />;
+        return <CloudStorage clientIp={clientIp} LUId={LUId} />;
       case "data-recovery":
         return <Addons />;
       // case "change-history":
       //   return <ChangeHistory />;
       case "settings":
-        return <Settings clientIp={clientIp} settingdata={settingdata} />;
+        return <Settings clientIp={clientIp} LUId={LUId} />;
       default:
         return null;
     }

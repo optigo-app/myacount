@@ -3,32 +3,178 @@ import "./Settings.css";
 import ResetAccount from "./settings-navbar/ResetAccount";
 import Profile from "./settings-navbar/Profile";
 import IPSecurity from "./settings-navbar/IPSecurity";
+import { getMyAccountInfo } from "../../../api/myAccountApi";
+import { updateProfile } from "../../../api/myAccountApi";
+import { addIpSecurity } from "../../../api/myAccountApi";
+import toast from "react-hot-toast";
 
-const Settings = ({ clientIp, settingdata }) => {
+const DrawerInput = React.memo(function DrawerInput({
+  label,
+  name,
+  value,
+  onChange,
+}) {
+  return (
+    <div className="drawer-input">
+      <label>{label}</label>
+      <input
+        value={value}
+        onChange={(e) =>
+          onChange(prev => ({ ...prev, [name]: e.target.value }))
+        }
+      />
+    </div>
+  );
+});
+
+
+const Settings = ({ clientIp, LUId }) => {
   const [active, setActive] = useState("profile");
   const [openEditProfile, setOpenEditProfile] = useState(false);
   const [showIpPopup, setShowIpPopup] = useState(false);
   const [ipForm, setIpForm] = useState({
-    ip: "",
+    ip: clientIp,
     requestBy: "",
   });
+  const [settingsResponse, setSettingsResponse] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [ipError, setIpError] = useState("");
   const ipRegex =
     /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
   // console.log("clientIp",clientIp);
+  const [drawerForm, setDrawerForm] = useState({
+    cmpname: "",
+    firstname: "",
+    lastname: "",
+    email1: "",
+    mobileno: "",
+    officeno: "",
+    addresslin1: "",
+    addresslin2: "",
+    cmpinfo_state: "",
+    cmpinfo_city: "",
+    cmpinfo_postalcode: "",
+    curid: 1,
+    curname: "INR",
+  });
+  
+  useEffect(() => {
+    if (!clientIp || !LUId) return;
+  
+    setLoading(true);
+  
+    getMyAccountInfo(clientIp, LUId)
+      .then(res => {
+        setSettingsResponse(res.Data);
+      })
+      .catch(err => {
+        console.error("Settings API error:", err.message);
+      })
+      .finally(() => setLoading(false));
+  
+  }, [clientIp, LUId]); 
 
-    useEffect(() => {
-      if (clientIp) {
-        setIpForm((prev) => ({
-          ...prev,
-          ip: clientIp,
-        }));
-      }
-    }, [clientIp]);
-    
-    const rcvData = settingdata?.rd?.[0];
-    console.log("rcvData", rcvData);
+  const profileData = settingsResponse?.rd?.[0];
 
+  useEffect(() => {
+    if (!profileData) return;
+  
+    setDrawerForm({
+      cmpname: profileData?.cmpinfo_companyname || "",
+      firstname: profileData?.basicinfo_firstname || "",
+      lastname: profileData?.basicinfo_lastname || "",
+      email1: profileData?.basicinfo_email || "",
+      mobileno: profileData?.basicinfo_mobileno || "",
+      officeno: profileData?.cmpinfo_officeph || "",
+      addresslin1: profileData?.cmpinfo_addressline1 || "",
+      addresslin2: profileData?.cmpinfo_addressline2 || "",
+      cmpinfo_state: profileData?.cmpinfo_state || "",
+      cmpinfo_city: profileData?.cmpinfo_city || "",
+      cmpinfo_postalcode: profileData?.cmpinfo_postalcode || "",
+      curid: profileData?.Country_CurrencyCodeID || 1,
+      curname: profileData?.Country_CurrencyCode || "INR",
+    });
+  }, [profileData, openEditProfile]);
+  
+  const handleSaveProfile = async () => {
+    const body = {
+      con: JSON.stringify({
+        mode: "updateProfileInfo",
+        appuserid: LUId,
+        IPAddress: clientIp,
+      }),
+      p: JSON.stringify(drawerForm),
+      f: "MyAccount ( gettoken )",
+    };
+  
+    try {
+      await updateProfile(body);
+      toast.success("Profile updated successfully");
+      await fetchSettingsData();
+      setOpenEditProfile(false);
+    } catch (err) {
+      toast.error(err.message || "Failed to update profile");
+    }
+  };
+  
+
+  const settingData = settingsResponse?.rd1?.[0];
+  const ipSecurityData = settingsResponse?.rd2;
+
+  const fetchSettingsData = () => {
+    if (!clientIp || !LUId) return;
+  
+    getMyAccountInfo(clientIp, LUId)
+      .then(res => {
+        setSettingsResponse(res.Data);
+      })
+      .catch(console.error);
+  };
+
+  useEffect(() => {
+    fetchSettingsData();
+  }, [clientIp, LUId]);
+
+  const handleAddIp = async () => {
+    if (!ipRegex.test(ipForm.ip)) {
+      setIpError("Enter a valid IP address");
+      return;
+    }
+  
+    const body = {
+      con: JSON.stringify({
+        mode: "addIpSecurity",
+        appuserid: LUId,
+        IPAddress: clientIp,
+      }),
+      p: JSON.stringify({
+        ipid: "0",
+        newIpAddress: ipForm.ip,
+        appuserid: LUId,
+        RequestBy: ipForm.requestBy,
+        remark: "IP added from settings",
+      }),
+      f: "MyAccount ( gettoken )",
+    };
+  
+    try {
+      await addIpSecurity(body);
+      toast.success("IP request added successfully");
+  
+      setShowIpPopup(false);
+      setIpForm({ ip: "", requestBy: "" });
+      setIpError("");
+  
+      fetchSettingsData(); // refresh IP list
+    } catch (err) {
+      toast.error(err?.message || "Failed to add IP");
+    }
+  };
+  
+  // console.log("profileData", profileData);
+  // console.log("settingData", settingData);
+  // console.log("ipSecurityData", ipSecurityData);
+  
     const NavItem = ({ label, active, onClick, variant }) => (
       <div
         className={`settings-nav-item 
@@ -38,14 +184,10 @@ const Settings = ({ clientIp, settingdata }) => {
       >
         {label}
       </div>
-    );    
+    );
 
-  const DrawerInput = ({ label, value }) => (
-    <div className="drawer-input">
-      <label>{label}</label>
-      <input defaultValue={value} />
-    </div>
-  );
+  if (loading) return <div>Loading settings...</div>;
+  if (!settingsResponse) return null;
 
   return (
     <div className="settings-wrapper-first">
@@ -54,13 +196,14 @@ const Settings = ({ clientIp, settingdata }) => {
           User & Security
         </h1>
       </div>
+
       <div className="settings-main">
 
         {/* LEFT NAV */}
         <div className="settings-nav">
           <div className="icloud-card">
             <div className="icloud-card-content">
-              <div className="icloud-logo">Smith Martinez</div>
+              <div className="icloud-logo">{settingData?.UFCC}</div>
 
               <div className="icloud-links">
                 <span>Pro Factory</span>
@@ -80,10 +223,21 @@ const Settings = ({ clientIp, settingdata }) => {
         {/* RIGHT CONTENT */}
         <div className="settings-content">
           {active === "profile" && (
-            <Profile setOpenEditProfile={setOpenEditProfile} rcvData={rcvData} />
+            <Profile 
+              setOpenEditProfile={setOpenEditProfile} 
+              profileData={profileData} 
+              clientIp={clientIp} 
+              LUId={LUId}  
+            />
           )}
           {active === "ip" && (
-            <IPSecurity setShowIpPopup={setShowIpPopup} />
+            <IPSecurity 
+              ipData={ipSecurityData} 
+              setShowIpPopup={setShowIpPopup} 
+              onRefresh={fetchSettingsData}
+              clientIp={clientIp} 
+              LUId={LUId} 
+            />
           )}
           {active === "reset" && <ResetAccount />}
         </div>
@@ -109,19 +263,77 @@ const Settings = ({ clientIp, settingdata }) => {
               </div>
 
               <div className="drawer-body">
-                <DrawerInput label="First Name" value={rcvData.basicinfo_firstname || ""} />
-                <DrawerInput label="Last Name" value={rcvData.basicinfo_lastname || ""} />
-                <DrawerInput label="Company" value={rcvData.cmpinfo_companyname || ""} />
-                <DrawerInput label="Email" value={rcvData.basicinfo_email || ""} />
-                <DrawerInput label="Mobile No" value={rcvData.basicinfo_mobileno || ""} />
-                <DrawerInput label="Office No" value={rcvData.cmpinfo_officeph || ""} />
-                <DrawerInput label="Address1" value={rcvData.cmpinfo_addressline1 || ""} />
-                <DrawerInput label="Address2" value={rcvData.cmpinfo_addressline2 || ""} />
-                <DrawerInput label="State" value={rcvData.cmpinfo_state || ""} />
-                <DrawerInput label="Zip" value={rcvData.cmpinfo_postalcode || ""} />
-                <DrawerInput label="Default Currency" value={rcvData.Country_CurrencyCode || ""} />
+                <DrawerInput
+                  label="First Name"
+                  name="firstname"
+                  value={drawerForm.firstname}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="Last Name"
+                  name="lastname"
+                  value={drawerForm.lastname}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="Company"
+                  name="cmpname"
+                  value={drawerForm.cmpname}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="Email"
+                  name="email1"
+                  value={drawerForm.email1}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="Mobile No"
+                  name="mobileno"
+                  value={drawerForm.mobileno}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="Office No"
+                  name="officeno"
+                  value={drawerForm.officeno}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="Address1"
+                  name="addresslin1"
+                  value={drawerForm.addresslin1}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="Address2"
+                  name="addresslin2"
+                  value={drawerForm.addresslin2}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="State"
+                  name="cmpinfo_state"
+                  value={drawerForm.cmpinfo_state}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="Zip"
+                  name="cmpinfo_postalcode"
+                  value={drawerForm.cmpinfo_postalcode}
+                  onChange={setDrawerForm}
+                />
+                <DrawerInput
+                  label="Default Currency"
+                  name="curname"
+                  value={drawerForm.curname}
+                  onChange={setDrawerForm}
+                />
 
-                <button className="drawer-save-btn">
+                <button
+                  className="drawer-save-btn"
+                  onClick={handleSaveProfile}
+                >
                   Save Changes
                 </button>
               </div>
@@ -174,16 +386,7 @@ const Settings = ({ clientIp, settingdata }) => {
 
               <button
                 className="Ip-Proceed"
-                onClick={() => {
-                  if (!ipRegex.test(ipForm.ip)) {
-                    setIpError("Enter a valid IP address");
-                    return;
-                  }
-                  console.log("IP Request Sent:", ipForm);
-                  setShowIpPopup(false);
-                  setIpForm({ ip: "", requestBy: "" });
-                  setIpError("");
-                }}
+                onClick={handleAddIp}
               >
                 Proceed
               </button>

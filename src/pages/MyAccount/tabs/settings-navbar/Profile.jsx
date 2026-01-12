@@ -3,6 +3,12 @@ import "./Profile.css";
 import managementIcon from "../../../../assets/profile/management.svg";
 import technicalIcon from "../../../../assets/profile/technical.svg";
 import accountIcon from "../../../../assets/profile/account.svg";
+import {
+  updateManagementInfo,
+  updateTechInfo,
+  updateAccountInfo,
+} from "../../../../api/myAccountApi";
+import toast from "react-hot-toast";
 
 const FormField = React.memo(function FormField({
     label,
@@ -73,44 +79,43 @@ const validateSection = (data) => {
     return errors;
 };  
   
-const Profile = ({ setOpenEditProfile, rcvData }) => {
+const Profile = ({ setOpenEditProfile, profileData, clientIp, LUId }) => {
     const [activeSection, setActiveSection] = useState(null);
     const [profileSectionsData, setProfileSectionsData] = useState({
         management: {
-            firstName: "",
-            lastName: "",
-            designation: "",
-            mobile: "",
-            email1: "",
-            email2: "",
-            email3: "",
-            yearsInOrg: ""
+            firstName: profileData?.mnginfo_firstname || "",
+            lastName: profileData?.mnginfo_lastname || "",
+            designation: profileData?.mnginfo_designation || "",
+            mobile: profileData?.mnginfo_mobileno || "",
+            email1: profileData?.mnginfo_email1 || "",
+            email2: profileData?.mnginfo_email2 || "",
+            email3: profileData?.mnginfo_email3 || "",
+            yearsInOrg: profileData?.mnginfo_yearsinorganization || ""
         },
         technical: {
-            firstName: "",
-            lastName: "",
-            designation: "",
-            mobile: "",
-            email1: "",
-            email2: "",
-            email3: "",
-            yearsInOrg: ""
+            firstName: profileData?.techinfo_firstname || "",
+            lastName: profileData?.techinfo_lastname || "",
+            designation: profileData?.techinfo_designation || "",
+            mobile: profileData?.techinfo_mobileno || "",
+            email1: profileData?.techinfo_email1 || "",
+            email2: profileData?.techinfo_email2 || "",
+            email3: profileData?.techinfo_email3 || "",
+            yearsInOrg: profileData?.techinfo_yearsinorganization || ""
         },
         account: {
-            firstName: "",
-            lastName: "",
-            designation: "",
-            mobile: "",
-            email1: "",
-            email2: "",
-            email3: "",
-            yearsInOrg: ""
+            firstName: profileData?.billinfo_firstname || "",
+            lastName: profileData?.billinfo_lastname || "",
+            designation: profileData?.billinfo_designation || "",
+            mobile: profileData?.billinfo_mobileno || "",
+            email1: profileData?.billinfo_email1 || "",
+            email2: profileData?.billinfo_email2 || "",
+            email3: profileData?.billinfo_email3 || "",
+            yearsInOrg: profileData?.billinfo_yearsinorganization || ""
         }
     });
     const [fieldErrors, setFieldErrors] = useState({});
-    // const rcvDataFr = rcvData;
-    // console.log("rcvDataFr",rcvDataFr);
-    
+    const [saving, setSaving] = useState(false);
+
     const STORAGE_KEY = "optigo_profile_sections";
     useEffect(() => {
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -156,6 +161,62 @@ const Profile = ({ setOpenEditProfile, rcvData }) => {
         );
     };      
 
+    const saveSection = async (sectionKey) => {
+        if (saving) return;
+      
+        const sectionData = profileSectionsData[sectionKey];
+      
+        const errors = validateSection(sectionData);
+        setFieldErrors(errors);
+        if (Object.keys(errors).length > 0) return;
+      
+        setSaving(true);
+      
+        let apiFn;
+        let mode;
+      
+        if (sectionKey === "management") {
+          apiFn = updateManagementInfo;
+          mode = "updateManagementInfo";
+        } else if (sectionKey === "technical") {
+          apiFn = updateTechInfo;
+          mode = "updateTechInfo";
+        } else {
+          apiFn = updateAccountInfo;
+          mode = "updateAccountInfo";
+        }
+      
+        const body = buildUpdateBody(mode, sectionData);
+      
+        try {
+          await apiFn(body);
+          toast.success("Details updated successfully");
+        } catch (err) {
+            toast.error(err?.message || "Update failed");
+        } finally {
+          setSaving(false);
+        }
+      };
+
+    const buildUpdateBody = (mode, sectionData) => ({
+        con: JSON.stringify({
+          mode,
+          appuserid: LUId,
+          IPAddress: clientIp,
+        }),
+        p: JSON.stringify({
+          designation: sectionData.designation,
+          firstname: sectionData.firstName,
+          lastname: sectionData.lastName,
+          mobileno: sectionData.mobile,
+          email1: sectionData.email1,
+          email2: sectionData.email2,
+          email3: sectionData.email3,
+          yearsinorganization: sectionData.yearsInOrg,
+        }),
+        f: "MyAccount ( gettoken )",
+      });
+
     return (
         <div className="profile-container">
             {activeSection === null && (
@@ -172,17 +233,17 @@ const Profile = ({ setOpenEditProfile, rcvData }) => {
                         </div>
 
                         <div className="profile-grid">
-                            <ProfileField label="Full Name" value={rcvData.basicinfo_firstname + " " + rcvData.basicinfo_lastname || ""} />
-                            <ProfileField label="Company" value={rcvData.cmpinfo_companyname || ""} />
-                            <ProfileField label="Default Currency" value={rcvData.Country_CurrencyCode || ""} />
+                            <ProfileField label="Full Name" value={profileData.basicinfo_firstname + " " + profileData.basicinfo_lastname || ""} />
+                            <ProfileField label="Company" value={profileData.cmpinfo_companyname || ""} />
+                            <ProfileField label="Default Currency" value={profileData.Country_CurrencyCode || ""} />
 
-                            <ProfileField label="Mobile No" value={rcvData.basicinfo_mobileno || ""} />
-                            <ProfileField label="Office No" value={rcvData.cmpinfo_officeph || ""} />
-                            <ProfileField label="Email" value={rcvData.basicinfo_email || ""} />
+                            <ProfileField label="Mobile No" value={profileData.basicinfo_mobileno || ""} />
+                            <ProfileField label="Office No" value={profileData.cmpinfo_officeph || ""} />
+                            <ProfileField label="Email" value={profileData.basicinfo_email || ""} />
 
                             <ProfileField
                                 label="Address"
-                                value={rcvData.cmpinfo_addressline1 + " " + rcvData.cmpinfo_addressline2 + " " + rcvData.cmpinfo_state + "  " + rcvData.cmpinfo_postalcode || ""}
+                                value={profileData.cmpinfo_addressline1 + " " + profileData.cmpinfo_addressline2 + " " + profileData.cmpinfo_state + "  " + profileData.cmpinfo_postalcode || ""}
                                 full
                             />
                         </div>
@@ -325,17 +386,7 @@ const Profile = ({ setOpenEditProfile, rcvData }) => {
                     <div className="profile-form-actions">
                     <button
                         className="profile-save-btn"
-                        onClick={() => {
-                            const errors = validateSection(profileSectionsData.management);
-                            setFieldErrors(errors);
-                          
-                            if (Object.keys(errors).length > 0) return;
-                          
-                            localStorage.setItem(
-                              STORAGE_KEY,
-                              JSON.stringify(profileSectionsData)
-                            );
-                        }}  
+                        onClick={() => saveSection("management")}
                     >
                         Save
                     </button>
@@ -423,17 +474,7 @@ const Profile = ({ setOpenEditProfile, rcvData }) => {
                     <div className="profile-form-actions">
                     <button
                         className="profile-save-btn"
-                        onClick={() => {
-                            const errors = validateSection(profileSectionsData.technical);
-                            setFieldErrors(errors);
-                          
-                            if (Object.keys(errors).length > 0) return;
-                          
-                            localStorage.setItem(
-                              STORAGE_KEY,
-                              JSON.stringify(profileSectionsData)
-                            );
-                        }}              
+                        onClick={() => saveSection("technical")}
                     >
                         Save
                     </button>
@@ -506,22 +547,13 @@ const Profile = ({ setOpenEditProfile, rcvData }) => {
                         </div>
 
                         <div className="profile-form-actions">
-                            <button
-                                className="profile-save-btn"
-                                onClick={() => {
-                                    const errors = validateSection(profileSectionsData.account);
-                                    setFieldErrors(errors);
-                                  
-                                    if (Object.keys(errors).length > 0) return;
-                                  
-                                    localStorage.setItem(
-                                      STORAGE_KEY,
-                                      JSON.stringify(profileSectionsData)
-                                    );
-                                  }}
-                            >
-                                Save
-                            </button>
+                        <button
+                            className="profile-save-btn"
+                            onClick={() => saveSection("account")}
+                        >
+                            Save
+                        </button>
+
                         </div>
 
                     </div>

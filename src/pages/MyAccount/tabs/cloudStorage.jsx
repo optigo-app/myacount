@@ -1,32 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CloudStorage.css";
+import { getCloudStorageData } from "../../../api/myAccountApi";
 
-const CloudStorage = () => {
+const CloudStorage = ({ clientIp, LUId }) => {
   const [openSection, setOpenSections] = useState({
     data: false,
     files: false,
-  });  
+  });
+
+  const [storageData, setStorageData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!clientIp || !LUId) return;
+
+    setLoading(true);
+
+    getCloudStorageData(clientIp, LUId)
+      .then(res => {
+        setStorageData(res.Data); // backend response
+      })
+      .catch(err => {
+        console.error("CloudStorage API error:", err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [clientIp, LUId]);
 
   const toggle = (key) => {
-    setOpenSections((prev) => ({
+    setOpenSections(prev => ({
       ...prev,
       [key]: !prev[key],
     }));
-  };  
+  };
 
+  if (loading) return <div>Loading storage...</div>;
+  if (!storageData) return null;
+
+  // console.log("storageData", storageData);
+  const dataStorage = storageData?.rd?.[0];
+  const fileStorage = storageData;
+  console.log("dataStorage", dataStorage);
+  
   return (
     <div className="cloud-wrapper-first">
       <div className="icloud-storage-wrapper">
         <div className="icloud-storage-grid">
 
           <div className="icloud-storage-left">
-            {/* HEADER */}
             <div className="icloud-storage-header">
               <h1>Your Cloud Storage</h1>
               <p>
-                Use your Cloud storage to keep your most important information—like
-                your photos, files, backups and more—secure, up to date and available
-                across all your devices
+                Use your Cloud storage to keep your most important information.
               </p>
             </div>
 
@@ -35,11 +61,12 @@ const CloudStorage = () => {
               color="blue"
               isOpen={openSection.data}
               onToggle={() => toggle("data")}
-              total="5 GB"
-              used="4 GB"
-              free="977.7 MB"
+              total={dataStorage?.ToltalSpaceGB}
+              used={dataStorage?.datausage}
+              free={dataStorage?.RemainingGB}
+              details={dataStorage}
             />
-
+            
             <StorageAccordion
               title="File Storage"
               color="purple"
@@ -48,6 +75,7 @@ const CloudStorage = () => {
               total="10 GB"
               used="6.2 GB"
               free="3.8 GB"
+              // details={fileStorage}
             />
           </div>
 
@@ -76,7 +104,7 @@ const CloudStorage = () => {
 
 export default CloudStorage;
 
-const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free }) => {
+const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free, details = [], }) => {
   return (
     <div className="storage-accordion">
         <div className="accordion-all-wrapper">
@@ -86,13 +114,13 @@ const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free })
             <div className="accordion-header" onClick={onToggle}>
               <div className="accordion-left">
                 <h3>{title}</h3>
-                <span className="storage-badge">5 GB</span>
+                <span className="storage-badge">{total}</span>
               </div>
 
               <div className="storage-summary">
-                <span className="storage-free">Free {free}</span>
+                <span className="storage-free">Free {free} GB</span>
                 <span className="dot-separator">·</span>
-                <span className="storage-used-text">Used {used}</span>
+                <span className="storage-used-text">Used {used} GB</span>
               </div>
             </div>
 
@@ -124,9 +152,21 @@ const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free })
           <div className="accordion-body">
             {/* STORAGE LIST */}
             <div className="storage-list">
-              <StorageRow label="Documents" size="3.9 GB" dot="orange" />
-              <StorageRow label="Mail" size="45.5 MB" dot="blue" />
-              <StorageRow label="Messages" size="143.9 KB" dot="green" />
+            {/* {details.length === 0 ? (
+              <div className="empty-text">No details available</div>
+            ) : (
+              details.map((item, index) => (
+                <StorageRow
+                  key={index}
+                  label={item.ModuleName}
+                  size={item.Usage}
+                  dot="orange"
+                />
+              ))
+            )} */}
+              <StorageRow label="SALES" size="4.43 GB" dot="orange" />
+              {/* <StorageRow label="Mail" size="45.5 MB" dot="blue" />
+              <StorageRow label="Messages" size="143.9 KB" dot="green" /> */}
             </div>
 
           </div>
@@ -135,6 +175,7 @@ const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free })
     </div>
   );
 };
+
 const StorageRow = ({ label, size, dot }) => (
   <div className="storage-row">
     <div className="storage-left">
