@@ -7,6 +7,8 @@ import { getMyAccountInfo } from "../../../api/myAccountApi";
 import { updateProfile } from "../../../api/myAccountApi";
 import { addIpSecurity } from "../../../api/myAccountApi";
 import toast from "react-hot-toast";
+import { useMinDelay } from "../../../hooks/useMinDelay";
+import AppLoader from "../../../components/loaders/Loader";
 
 const DrawerInput = React.memo(function DrawerInput({
   label,
@@ -57,6 +59,7 @@ const Settings = ({ clientIp, LUId }) => {
     curid: 1,
     curname: "INR",
   });
+  const minDelayDone = useMinDelay(500);
   
   useEffect(() => {
     if (!clientIp || !LUId) return;
@@ -186,7 +189,9 @@ const Settings = ({ clientIp, LUId }) => {
       </div>
     );
 
-  if (loading) return <div>Loading settings...</div>;
+  if (loading || !minDelayDone) {
+    return <AppLoader text="Please Wait.." />;
+  }
   if (!settingsResponse) return null;
 
   return (

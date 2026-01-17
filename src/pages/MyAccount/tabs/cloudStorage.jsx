@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./CloudStorage.css";
 import { getCloudStorageData } from "../../../api/myAccountApi";
+import { useMinDelay } from "../../../hooks/useMinDelay";
+import AppLoader from "../../../components/loaders/Loader";
 
 const CloudStorage = ({ clientIp, LUId }) => {
   const [openSection, setOpenSections] = useState({
     data: false,
     files: false,
   });
+  const minDelayDone = useMinDelay(500);
 
   const [storageData, setStorageData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -35,7 +38,9 @@ const CloudStorage = ({ clientIp, LUId }) => {
     }));
   };
 
-  if (loading) return <div>Loading storage...</div>;
+  if (loading || !minDelayDone) {
+    return <AppLoader text="Please Wait.." />;
+  }
   if (!storageData) return null;
 
   // console.log("storageData", storageData);

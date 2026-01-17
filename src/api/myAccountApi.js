@@ -51,7 +51,7 @@ export function getCloudStorageData(clientIp, LUId) {
     };
   
     return executeMyAccountApi(body);
-  }
+}
 
 export function getMyAccountInfo(clientIp, LUId) {
     const body = {
@@ -66,6 +66,20 @@ export function getMyAccountInfo(clientIp, LUId) {
     };
   
     return executeMyAccountApi(body);
+}
+
+export function getRegisteredMobile(clientIp, LUId) {
+  const body = {
+    con: JSON.stringify({
+      mode: "Get_Mobileno",
+      appuserid: LUId,
+      IPAddress: clientIp,
+    }),
+    p: "{}",
+    f: "MyAccount ( gettoken )",
+  };
+
+  return executeMyAccountApi(body);
 }
 
 export function updateProfile(body) {
@@ -91,7 +105,14 @@ export function addIpSecurity(body) {
 export function softDeleteIpSecurity(body) {
   return executeMyAccountApi(body);
 }
-  
+
+export function generateOtp(body) {
+  return executeMyAccountApi(body);
+}
+
+export function verifyOtp(body) {
+  return executeMyAccountApi(body);
+}
 
 // import axios from "axios";
 // import { decodeCookieValue } from "../utils/decodeCookieValue";

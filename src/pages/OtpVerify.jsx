@@ -5,13 +5,13 @@ import "./OtpVerify.css";
 import slide1 from "../assets/otp-slider/slide1.png";
 import slide2 from "../assets/otp-slider/slide2.png";
 import slide3 from "../assets/otp-slider/slide3.png";
+import { generateOtp, verifyOtp } from "../api/myAccountApi";
+import { sendOtpOnWhatsapp } from "../api/whatsappApi";
+import toast from "react-hot-toast"
 
 const images = [slide1, slide2, slide3];
 
-const OtpVerify = ({ onOtpSuccess }) => {
-  const CN = sessionStorage.getItem("CN");
-  // console.log("CN available in OtpVerify:", CN);
-
+const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
   const [error, setError] = useState("");
   const [activeImage, setActiveImage] = useState(0);
   const navigate = useNavigate();
@@ -94,18 +94,44 @@ const OtpVerify = ({ onOtpSuccess }) => {
     inputsRef.current[Math.min(pasted.length, OTP_LENGTH) - 1]?.focus();
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const enteredOtp = otp.slice(2).join("");
   
-    if (enteredOtp === "1234") {
-      sessionStorage.setItem("otp_verified", "true");
+    if (enteredOtp.length < 4) {
+      setError("Please enter complete OTP");
+      return;
+    }
   
-      // console.log("[OtpVerify] OTP verified, updating App state");
+    const body = {
+      con: JSON.stringify({
+        mode: "Otp_Verify",
+        appuserid: LUId,
+        IPAddress: clientIp,
+      }),
+      p: JSON.stringify({
+        otp_entered: `A-${enteredOtp}`,
+      }),
+      f: "MyAccount ( gettoken )",
+    };
   
-      onOtpSuccess();
-      navigate("/", { replace: true });
-    } else {
-      setError("Incorrect OTP. Please try again.");
+    try {
+      const res = await verifyOtp(body);
+  
+      const msg = res?.Data?.rd?.[0]?.msg;
+  
+      if (msg === "Successfully Verified OTP") {
+        toast.success("OTP verified successfully");
+  
+        sessionStorage.setItem("otp_verified", "true");
+  
+        onOtpSuccess();
+        navigate("/", { replace: true });
+      } else {
+        setError("Invalid OTP. Please try again.");
+      }
+  
+    } catch (err) {
+      setError(err.message || "OTP verification failed");
     }
   };           
 
@@ -124,19 +150,69 @@ const OtpVerify = ({ onOtpSuccess }) => {
     },
   ];
 
-  const handleSendOtp = () => {
-    setStep("verify");
-    setCanResend(true);
+  const buildOtpBody = () => ({
+    con: JSON.stringify({
+      mode: "Otp_Generate",
+      appuserid: LUId,
+      IPAddress: clientIp,
+    }),
+    p: "{}",
+    f: "MyAccount ( gettoken )",
+  });
+
+  const handleSendOtp = async () => {
+    try {
+      const body = {
+        con: JSON.stringify({
+          mode: "Otp_Generate",
+          appuserid: LUId,
+          IPAddress: clientIp,
+        }),
+        p: "{}",
+        f: "MyAccount ( gettoken )",
+      };
+  
+      const res = await generateOtp(body);
+  
+      const otpData = res?.Data?.rd?.[0];
+      if (!otpData) throw new Error("OTP generation failed");
+  
+      const otp = otpData.new_otp.split("-")[1];
+  
+      await sendOtpOnWhatsapp({
+        phoneNo: mobileNo,
+        otp,
+        appuserid: LUId,
+        customerId: 1048,
+      });
+  
+      toast.success("OTP sent successfully");
+  
+      setStep("verify");
+      setCanResend(false);
+      setResendTimer(RESEND_TIME);
+      setError("");
+  
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Failed to send OTP");
+    }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (!canResend) return;
   
-    // API call later
-    setCanResend(false);
-    setResendTimer(RESEND_TIME);
-    setError("");
+    try {
+      await handleSendOtp();
+      toast.success("OTP resent");
+    } catch {
+      toast.error("Failed to resend OTP");
+    }
   };
+
+  const maskedMobile = mobileNo
+  ? `+91 XXXXX X${mobileNo.slice(-4)}`
+  : "";
 
   return (
     <div className="otp-page">
@@ -150,7 +226,6 @@ const OtpVerify = ({ onOtpSuccess }) => {
             <h1>Verify your identity</h1>
           </div>
 
-          {/* STEP 1 — SEND OTP */}
           {step === "send" && (
             <>
               <p className="otp-subtitle">
@@ -158,8 +233,7 @@ const OtpVerify = ({ onOtpSuccess }) => {
               </p>
 
               <div className="otp-mobile">
-                +91 XXXXX X3581
-                {/* +91 98744 53581 */}
+                {maskedMobile}
               </div>
 
               <button className="otp-btn" onClick={handleSendOtp}>
@@ -170,7 +244,6 @@ const OtpVerify = ({ onOtpSuccess }) => {
             </>
           )}
 
-          {/* STEP 2 — VERIFY OTP */}
           {step === "verify" && (
             <form
               className="otp-handle"
