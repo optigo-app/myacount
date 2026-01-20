@@ -48,9 +48,10 @@
 .storage-badge {
   background: #000;
   color: #fff;
-  padding: 6px 14px;
+  padding: 8px 8px;
   border-radius: 8px;
   font-family: 'SF Pro Bold';
+  font-size: 14px;
 }
 
 .storage-usage-text {
@@ -169,21 +170,21 @@
 }
 
 .storage-help-card h3 {
-  font-size: 22px;
+  font-size: 20px;
   font-family: 'SF Pro Bold';
   margin: 1% 0%;
 }
 
 .storage-help-card p {
-  font-size: 18px;
+  font-size: 16px;
   color: #6e6e73;
-  margin: 1.5% 0.1%;
+  margin: 1% 0.1%;
 }
 
 .storage-help-card a {
-  font-size: 18px;
+  font-size: 16px;
   color: #0071e3;
-  margin: 0% 0.1%;
+  margin: 0% 0%;
 }
 
 /* ===== ACCORDION (NEW) ===== */
@@ -216,13 +217,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .accordion-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
 .accordion-left h3 {
@@ -261,30 +262,31 @@
 .icloud-upgrade-card {
   /* background: #f5f5f7; */
   border-radius: 14px;
-  padding: 16px;
+  padding: 1%;
   /* margin: 28px 0 40px; */
 }
 
 .icloud-upgrade-card h3 {
-  font-size: 20px;
+  font-size: 18px;
   font-family: 'SF Pro Bold';
-  margin: 1% 0%;
+  margin: 0.3% 0%;
 }
 
 .icloud-upgrade-card p {
-  font-size: 18px;
+  font-size: 16px;
   color: #6e6e73;
-  margin: 1.5% 0.1%;
+  margin: 0.7% 0%;
 }
 
 .icloud-upgrade-card a {
-  font-size: 18px;
+  font-size: 16px;
   color: #0071e3;
-  margin: 0% 0.1%;
+  margin: 0.4% 0%;
 }
 .accrodian-last {
   display: flex;
   justify-content: space-between;
+  padding: 1% 1% 0.5%;
 }
 
 .chevron {
@@ -294,6 +296,7 @@
   border-bottom: 2px solid #1d1d1f;
   transform: rotate(45deg);
   transition: transform 0.25s ease;
+  cursor: pointer;
 }
 
 .chevron.open {

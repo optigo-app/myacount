@@ -50,11 +50,7 @@ const App = () => {
     const clearOtp = () => {
       sessionStorage.removeItem("otp_verified");
     };
-  
-    // When user switches tab / minimizes window
-    window.addEventListener("blur", clearOtp);
-  
-    // When tab becomes hidden (mobile, background)
+    window.addEventListener("blur", clearOtp);  
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") {
         clearOtp();

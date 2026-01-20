@@ -91,6 +91,16 @@ const ResetAccount = ({ setConfirmAction }) => {
         {flowStep === "default" && (
             <div className="reset-wrapper">
 
+            <div className="danger-alert">
+                <div className="danger-icon">⚠️</div>
+                <div className="danger-content">
+                    <p>
+                    Any action performed from this section is permanent and cannot be rolled back.
+                    Please make sure you understand the impact before proceeding.
+                    </p>
+                </div>
+            </div>
+    
             {/* ROW 1 → 50 / 50 */}
             <div className="reset-row">
                 <ResetBox title="Full Reset">

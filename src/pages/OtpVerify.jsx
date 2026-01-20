@@ -19,6 +19,7 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
   // const isOtpVerfied = sessionStorage.getItem('otp_verified');
   const OTP_LENGTH = 6;
   const [otp, setOtp] = useState(["A", "-", "", "", "", ""]);
+  const [sendingOtp, setSendingOtp] = useState(false);
   const inputsRef = useRef([]);
   const RESEND_TIME = 60;
   const [resendTimer, setResendTimer] = useState(RESEND_TIME);
@@ -141,27 +142,18 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
       desc: "Your account is protected with multi-layer security.",
     },
     {
-      title: "Access Anywhere",
-      desc: "Stay connected across all your devices seamlessly.",
-    },
-    {
       title: "Data You Can Trust",
       desc: "Your information is encrypted and always protected.",
     },
+    {
+      title: "Access Anywhere",
+      desc: "Stay connected across all your devices seamlessly.",
+    },
   ];
-
-  const buildOtpBody = () => ({
-    con: JSON.stringify({
-      mode: "Otp_Generate",
-      appuserid: LUId,
-      IPAddress: clientIp,
-    }),
-    p: "{}",
-    f: "MyAccount ( gettoken )",
-  });
 
   const handleSendOtp = async () => {
     try {
+      setSendingOtp(true);
       const body = {
         con: JSON.stringify({
           mode: "Otp_Generate",
@@ -196,9 +188,61 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Failed to send OTP");
+    } finally {
+      setSendingOtp(false);
     }
   };
 
+  // const handleSendOtp = async () => {
+  //   if (sendingOtp) return;
+  
+  //   setSendingOtp(true);
+  
+  //   const minDelay = new Promise((res) => setTimeout(res, 80000));
+  
+  //   try {
+  //     const body = {
+  //       con: JSON.stringify({
+  //         mode: "Otp_Generate",
+  //         appuserid: LUId,
+  //         IPAddress: clientIp,
+  //       }),
+  //       p: "{}",
+  //       f: "MyAccount ( gettoken )",
+  //     };
+  
+  //     const apiCall = (async () => {
+  //       const res = await generateOtp(body);
+  
+  //       const otpData = res?.Data?.rd?.[0];
+  //       if (!otpData) throw new Error("OTP generation failed");
+  
+  //       const otp = otpData.new_otp.split("-")[1];
+  
+  //       await sendOtpOnWhatsapp({
+  //         phoneNo: mobileNo,
+  //         otp,
+  //         appuserid: LUId,
+  //         customerId: 1048,
+  //       });
+  //     })();
+  
+  //     await Promise.all([apiCall, minDelay]);
+  
+  //     toast.success("OTP sent successfully");
+  
+  //     setStep("verify");
+  //     setCanResend(false);
+  //     setResendTimer(RESEND_TIME);
+  //     setError("");
+  
+  //   } catch (err) {
+  //     toast.error(err.message || "Failed to send OTP");
+  //   } finally {
+  //     setSendingOtp(false);
+  //   }
+  // };
+  
   const handleResend = async () => {
     if (!canResend) return;
   
@@ -236,8 +280,12 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
                 {maskedMobile}
               </div>
 
-              <button className="otp-btn" onClick={handleSendOtp}>
-                Send OTP
+              <button
+                className={sendingOtp ? "otp-btn-loading" : "otp-btn" }
+                onClick={handleSendOtp}
+                disabled={sendingOtp}
+              >
+                {sendingOtp ? <span className="btn-spinner" /> : "Send OTP"}
               </button>
 
               <div className="otp-footer"></div>

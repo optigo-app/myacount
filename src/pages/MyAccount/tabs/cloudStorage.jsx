@@ -116,14 +116,14 @@ const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free, d
         {/* HEADER */}
         <div className="accordion-header-wrapper">
           <div className="accordion-bar-wrapper">
-            <div className="accordion-header" onClick={onToggle}>
+            <div className="accordion-header">
               <div className="accordion-left">
                 <h3>{title}</h3>
                 <span className="storage-badge">{total}</span>
               </div>
 
               <div className="storage-summary">
-                <span className="storage-free">Free {free} GB</span>
+                <span className="storage-free">Available {free} GB</span>
                 <span className="dot-separator">·</span>
                 <span className="storage-used-text">Used {used} GB</span>
               </div>
@@ -146,9 +146,9 @@ const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free, d
               <a href="#">Upgrade for ₹75.00/month</a>
           </div>
 
-          <div className="accrodian-last" onClick={onToggle}>
+          <div className="accrodian-last">
             <div className="storage-free">View Details</div>
-            <div className={`chevron ${isOpen ? "open" : ""}`} />
+            <div className={`chevron ${isOpen ? "open" : ""}`} onClick={onToggle} />
           </div>
         </div>
 

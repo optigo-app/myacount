@@ -2,7 +2,7 @@
 .reset-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 23px;
+    gap: 16px;
   }
   
   /* FIRST ROW → 2 COLUMNS */
@@ -234,5 +234,38 @@
     font-size: 18px;
     font-family: 'SF Pro Bold';
     text-align: right;
+  }
+  
+/*********** Alert Message ************/
+  .danger-alert {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: #fff5f5;
+    border: 1px solid #ffd6d6;
+    border-left: 6px solid #ff3b30;
+    padding: 1% 2%;
+    border-radius: 14px;
+  }
+  
+  .danger-icon {
+    font-size: 18px;
+    color: #ff3b30;
+    margin-top: 0px;
+  }
+  
+  .danger-content strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin-bottom: 4px;
+  }
+  
+  .danger-content p {
+    font-size: 14px;
+    color: #6e6e73;
+    margin: 0;
+    line-height: 16px;
   }
   

@@ -2,7 +2,7 @@
 @import "./styles/theme.css";
 
 html, body, #root {
-  height: 97.95%;
+  height: 100%;
   overflow: hidden;
   overflow-y: scroll;
 }
@@ -34,7 +34,7 @@ body {
 }
 
 .page-wrapper {
-  height: 97.95%;
+  height: 100%;
   width: 100%;
   max-width: 100%;
   margin: 0 0;

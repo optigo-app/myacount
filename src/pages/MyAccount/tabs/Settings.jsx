@@ -5,7 +5,6 @@ import Profile from "./settings-navbar/Profile";
 import IPSecurity from "./settings-navbar/IPSecurity";
 import { getMyAccountInfo } from "../../../api/myAccountApi";
 import { updateProfile } from "../../../api/myAccountApi";
-import { addIpSecurity } from "../../../api/myAccountApi";
 import toast from "react-hot-toast";
 import { useMinDelay } from "../../../hooks/useMinDelay";
 import AppLoader from "../../../components/loaders/Loader";
@@ -33,14 +32,8 @@ const DrawerInput = React.memo(function DrawerInput({
 const Settings = ({ clientIp, LUId }) => {
   const [active, setActive] = useState("profile");
   const [openEditProfile, setOpenEditProfile] = useState(false);
-  const [showIpPopup, setShowIpPopup] = useState(false);
-  const [ipForm, setIpForm] = useState({
-    ip: clientIp,
-    requestBy: "",
-  });
   const [settingsResponse, setSettingsResponse] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [ipError, setIpError] = useState("");
   const ipRegex =
     /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
   // console.log("clientIp",clientIp);
@@ -137,42 +130,6 @@ const Settings = ({ clientIp, LUId }) => {
   useEffect(() => {
     fetchSettingsData();
   }, [clientIp, LUId]);
-
-  const handleAddIp = async () => {
-    if (!ipRegex.test(ipForm.ip)) {
-      setIpError("Enter a valid IP address");
-      return;
-    }
-  
-    const body = {
-      con: JSON.stringify({
-        mode: "addIpSecurity",
-        appuserid: LUId,
-        IPAddress: clientIp,
-      }),
-      p: JSON.stringify({
-        ipid: "0",
-        newIpAddress: ipForm.ip,
-        appuserid: LUId,
-        RequestBy: ipForm.requestBy,
-        remark: "IP added from settings",
-      }),
-      f: "MyAccount ( gettoken )",
-    };
-  
-    try {
-      await addIpSecurity(body);
-      toast.success("IP request added successfully");
-  
-      setShowIpPopup(false);
-      setIpForm({ ip: "", requestBy: "" });
-      setIpError("");
-  
-      fetchSettingsData(); // refresh IP list
-    } catch (err) {
-      toast.error(err?.message || "Failed to add IP");
-    }
-  };
   
   // console.log("profileData", profileData);
   // console.log("settingData", settingData);
@@ -181,8 +138,7 @@ const Settings = ({ clientIp, LUId }) => {
     const NavItem = ({ label, active, onClick, variant }) => (
       <div
         className={`settings-nav-item 
-          ${active ? "active" : ""} 
-          ${variant === "danger" ? "nav-danger" : ""}`}
+          ${active ? "active" : ""}`}
         onClick={onClick}
       >
         {label}
@@ -237,8 +193,7 @@ const Settings = ({ clientIp, LUId }) => {
           )}
           {active === "ip" && (
             <IPSecurity 
-              ipData={ipSecurityData} 
-              setShowIpPopup={setShowIpPopup} 
+              ipData={ipSecurityData}  
               onRefresh={fetchSettingsData}
               clientIp={clientIp} 
               LUId={LUId} 
@@ -346,59 +301,6 @@ const Settings = ({ clientIp, LUId }) => {
           </>
         )}
       </div>
-
-      {showIpPopup && (
-        <>
-          <div className="confirm-overlay" />
-
-          <div className="confirm-modal">
-            <h3>Add IP Request</h3>
-
-            <div className="drawer-input">
-              <label>Entry Date</label>
-              <input value={new Date().toLocaleDateString()} readOnly />
-            </div>
-
-            <div className="drawer-input">
-              <label>IP Address</label>
-              <input
-                value={ipForm.ip}
-                onChange={(e) =>
-                  setIpForm({ ...ipForm, ip: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="drawer-input">
-              <label>Request By</label>
-              <input
-                value={ipForm.requestBy}
-                onChange={(e) =>
-                  setIpForm({ ...ipForm, requestBy: e.target.value })
-                }
-              />
-            </div>
-
-            {ipError && <p className="otp-error">{ipError}</p>}
-
-            <div className="confirm-actions">
-              <button
-                className="confirm-cancel"
-                onClick={() => setShowIpPopup(false)}
-              >
-                Cancel
-              </button>
-
-              <button
-                className="Ip-Proceed"
-                onClick={handleAddIp}
-              >
-                Proceed
-              </button>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 
