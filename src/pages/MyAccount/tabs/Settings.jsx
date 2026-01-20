@@ -146,7 +146,7 @@ const Settings = ({ clientIp, LUId }) => {
     );
 
   if (loading || !minDelayDone) {
-    return <AppLoader text="Please Wait.." />;
+    return <AppLoader text="Loading..." />;
   }
   if (!settingsResponse) return null;
 

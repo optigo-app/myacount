@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 import "./OtpVerify.css";
 import slide1 from "../assets/otp-slider/slide1.png";
@@ -24,6 +24,7 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
   const RESEND_TIME = 60;
   const [resendTimer, setResendTimer] = useState(RESEND_TIME);
   const [canResend, setCanResend] = useState(true);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -48,10 +49,18 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
     return () => clearTimeout(timer);
   }, [resendTimer, step, canResend]);
 
+  useEffect(() => {
+    if (step === "verify") {
+      setTimeout(() => {
+        inputsRef.current[2]?.focus();
+      }, 0);
+    }
+  }, [step]);
+
   const handleChange = (value, index) => {
     if (index < 2) return;
-
     if (!/^\d?$/.test(value)) return;
+    if (error) setError("");
 
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -79,29 +88,48 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").slice(0, OTP_LENGTH);
-
-    if (!/^\d+$/.test(pasted)) return;
-
-    const newOtp = pasted.split("");
+  
+    let pasted = e.clipboardData.getData("text").trim();
+  
+    if (pasted.startsWith("A-")) {
+      pasted = pasted.slice(2);
+    }
+  
+    if (!/^\d{1,4}$/.test(pasted)) return;
+  
+    const digits = pasted.split("");
+  
+    const newOtp = ["A", "-", "", "", "", ""];
+  
+    digits.forEach((digit, i) => {
+      newOtp[i + 2] = digit;
+    });
+  
     setOtp(newOtp);
+    setError("");
 
-    newOtp.forEach((_, i) => {
-      if (inputsRef.current[i]) {
-        inputsRef.current[i].value = newOtp[i];
+    digits.forEach((digit, i) => {
+      if (inputsRef.current[i + 2]) {
+        inputsRef.current[i + 2].value = digit;
       }
     });
-
-    inputsRef.current[Math.min(pasted.length, OTP_LENGTH) - 1]?.focus();
-  };
+  
+    const focusIndex = Math.min(digits.length + 1, 5);
+    inputsRef.current[focusIndex]?.focus();
+  };  
 
   const handleVerify = async () => {
+    if (verifyingOtp) return;
+  
     const enteredOtp = otp.slice(2).join("");
   
     if (enteredOtp.length < 4) {
       setError("Please enter complete OTP");
       return;
     }
+  
+    setVerifyingOtp(true);
+    setError("");
   
     const body = {
       con: JSON.stringify({
@@ -116,7 +144,10 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
     };
   
     try {
-      const res = await verifyOtp(body);
+      const minDelay = new Promise((res) => setTimeout(res, 300));
+      const apiCall = verifyOtp(body);
+  
+      const [res] = await Promise.all([apiCall, minDelay]);
   
       const msg = res?.Data?.rd?.[0]?.msg;
   
@@ -124,17 +155,18 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
         toast.success("OTP verified successfully");
   
         sessionStorage.setItem("otp_verified", "true");
-  
         onOtpSuccess();
         navigate("/", { replace: true });
-      } else {
-        setError("Invalid OTP. Please try again.");
+        return;
       }
   
+      setError("Invalid OTP. Please try again.");
     } catch (err) {
       setError(err.message || "OTP verification failed");
+    } finally {
+      setVerifyingOtp(false);
     }
-  };           
+  };            
 
   const captions = [
     {
@@ -151,32 +183,39 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
     },
   ];
 
+  const sendOtpFlow = async () => {
+    const body = {
+      con: JSON.stringify({
+        mode: "Otp_Generate",
+        appuserid: LUId,
+        IPAddress: clientIp,
+      }),
+      p: "{}",
+      f: "MyAccount ( gettoken )",
+    };
+  
+    const res = await generateOtp(body);
+  
+    const otpData = res?.Data?.rd?.[0];
+    if (!otpData) throw new Error("OTP generation failed");
+  
+    const otp = otpData.new_otp.split("-")[1];
+  
+    await sendOtpOnWhatsapp({
+      phoneNo: mobileNo,
+      otp,
+      appuserid: LUId,
+      customerId: 1048,
+    });
+  };
+
   const handleSendOtp = async () => {
+    if (sendingOtp) return;
+  
     try {
       setSendingOtp(true);
-      const body = {
-        con: JSON.stringify({
-          mode: "Otp_Generate",
-          appuserid: LUId,
-          IPAddress: clientIp,
-        }),
-        p: "{}",
-        f: "MyAccount ( gettoken )",
-      };
   
-      const res = await generateOtp(body);
-  
-      const otpData = res?.Data?.rd?.[0];
-      if (!otpData) throw new Error("OTP generation failed");
-  
-      const otp = otpData.new_otp.split("-")[1];
-  
-      await sendOtpOnWhatsapp({
-        phoneNo: mobileNo,
-        otp,
-        appuserid: LUId,
-        customerId: 1048,
-      });
+      await sendOtpFlow();
   
       toast.success("OTP sent successfully");
   
@@ -184,7 +223,6 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
       setCanResend(false);
       setResendTimer(RESEND_TIME);
       setError("");
-  
     } catch (err) {
       console.error(err);
       toast.error(err.message || "Failed to send OTP");
@@ -192,67 +230,42 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
       setSendingOtp(false);
     }
   };
+  
+  const resetOtpInputs = () => {
+    const freshOtp = ["A", "-", "", "", "", ""];
+    setOtp(freshOtp);
+    setError("");
+  
+    inputsRef.current.forEach((input, index) => {
+      if (input && index >= 2) {
+        input.value = "";
+      }
+    });
+  
+    setTimeout(() => {
+      inputsRef.current[2]?.focus();
+    }, 0);
+  };
 
-  // const handleSendOtp = async () => {
-  //   if (sendingOtp) return;
-  
-  //   setSendingOtp(true);
-  
-  //   const minDelay = new Promise((res) => setTimeout(res, 80000));
-  
-  //   try {
-  //     const body = {
-  //       con: JSON.stringify({
-  //         mode: "Otp_Generate",
-  //         appuserid: LUId,
-  //         IPAddress: clientIp,
-  //       }),
-  //       p: "{}",
-  //       f: "MyAccount ( gettoken )",
-  //     };
-  
-  //     const apiCall = (async () => {
-  //       const res = await generateOtp(body);
-  
-  //       const otpData = res?.Data?.rd?.[0];
-  //       if (!otpData) throw new Error("OTP generation failed");
-  
-  //       const otp = otpData.new_otp.split("-")[1];
-  
-  //       await sendOtpOnWhatsapp({
-  //         phoneNo: mobileNo,
-  //         otp,
-  //         appuserid: LUId,
-  //         customerId: 1048,
-  //       });
-  //     })();
-  
-  //     await Promise.all([apiCall, minDelay]);
-  
-  //     toast.success("OTP sent successfully");
-  
-  //     setStep("verify");
-  //     setCanResend(false);
-  //     setResendTimer(RESEND_TIME);
-  //     setError("");
-  
-  //   } catch (err) {
-  //     toast.error(err.message || "Failed to send OTP");
-  //   } finally {
-  //     setSendingOtp(false);
-  //   }
-  // };
-  
   const handleResend = async () => {
-    if (!canResend) return;
+    if (!canResend || sendingOtp) return;
   
     try {
-      await handleSendOtp();
+      resetOtpInputs();
+      setSendingOtp(true);
+  
+      await sendOtpFlow();
+  
       toast.success("OTP resent");
-    } catch {
+  
+      setCanResend(false);
+      setResendTimer(RESEND_TIME);
+    } catch (err) {
       toast.error("Failed to resend OTP");
+    } finally {
+      setSendingOtp(false);
     }
-  };
+  };  
 
   const maskedMobile = mobileNo
   ? `+91 XXXXX X${mobileNo.slice(-4)}`
@@ -322,8 +335,8 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
 
               {error && <div className="otp-error">{error}</div>}
 
-              <button type="submit" className="otp-btn">
-                Continue
+              <button type="submit" className={verifyingOtp ? "otp-continue-btn-loading" : "otp-continue-btn" } disabled={verifyingOtp}>
+                {verifyingOtp ? <span className="btn-spinner" /> : "Continue"}
               </button>
 
               <div className="otp-footer">
@@ -336,9 +349,19 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
                     <span style={{ color: "#6e6e73" }}>
                       Didn’t receive the code?{" "}
                     </span>
-                    <span onClick={handleResend} className="resend-active">
-                      Resend
-                    </span>
+                    {sendingOtp ? (
+                      <span className="resend-loader">
+                        <span className="resend-dots">
+                          <span></span>
+                          <span></span>
+                          <span></span>
+                        </span>
+                      </span>
+                    ) : (
+                      <span onClick={handleResend} className="resend-active" style={{ cursor: "pointer" }}>
+                        Resend
+                      </span>
+                    )}
                   </span>
                 )}
               </div>

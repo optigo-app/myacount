@@ -64,7 +64,7 @@ const App = () => {
   }, []);
 
   if (!bootstrapped || !minDelayDone) {
-    return <AppLoader text="Please Wait.." />;
+    return <AppLoader text="Loading..." />;
   }
 
   // console.log("[App] isOtpVerified =", isOtpVerified);
