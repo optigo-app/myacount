@@ -268,7 +268,7 @@ const OtpVerify = ({ onOtpSuccess, clientIp, LUId, mobileNo }) => {
   };  
 
   const maskedMobile = mobileNo
-  ? `+91 XXXXX X${mobileNo.slice(-4)}`
+  ? `+91 ${mobileNo.slice(0,2)}XXX XXXXX`
   : "";
 
   return (
