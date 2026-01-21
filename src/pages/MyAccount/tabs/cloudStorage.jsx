@@ -4,6 +4,19 @@ import { getCloudStorageData } from "../../../api/myAccountApi";
 import { useMinDelay } from "../../../hooks/useMinDelay";
 import AppLoader from "../../../components/loaders/Loader";
 
+const APPLE_COLORS = [
+  "#FF9500",
+  "#7367f0",
+  "#34C759",
+  "#AF52DE",
+  "#007AFF",
+  "#5AC8FA",
+  "#FF2D55",
+];
+
+const generateColorByIndex = (index) =>
+  APPLE_COLORS[index % APPLE_COLORS.length];
+
 const CloudStorage = ({ clientIp, LUId }) => {
   const [openSection, setOpenSections] = useState({
     data: false,
@@ -21,7 +34,7 @@ const CloudStorage = ({ clientIp, LUId }) => {
 
     getCloudStorageData(clientIp, LUId)
       .then(res => {
-        setStorageData(res.Data); // backend response
+        setStorageData(res.Data);
       })
       .catch(err => {
         console.error("CloudStorage API error:", err.message);
@@ -43,11 +56,21 @@ const CloudStorage = ({ clientIp, LUId }) => {
   }
   if (!storageData) return null;
 
-  // console.log("storageData", storageData);
-  const dataStorage = storageData?.rd?.[0];
-  const fileStorage = storageData;
-  console.log("dataStorage", dataStorage);
+  const dataStorage = storageData?.rd;
+  const StorageTotals = storageData?.rd1?.[0];
+
+  const totalStorage = 5;
+
+  const totalDataStorage = StorageTotals?.TotalDataStorage ?? 0;
+  const totalFilStorage = StorageTotals?.TotalFilStorage ?? 0;
   
+  const dataSegments = dataStorage.map((item, index) => ({
+    label: item.ModuleName,
+    value: item.datausage,
+    percent: (item.datausage / totalDataStorage) * 100,
+    color: generateColorByIndex(index, dataStorage.length),
+  }));
+
   return (
     <div className="cloud-wrapper-first">
       <div className="icloud-storage-wrapper">
@@ -63,24 +86,40 @@ const CloudStorage = ({ clientIp, LUId }) => {
 
             <StorageAccordion
               title="Data Storage"
-              color="blue"
               isOpen={openSection.data}
               onToggle={() => toggle("data")}
-              total={dataStorage?.ToltalSpaceGB}
-              used={dataStorage?.datausage}
-              free={dataStorage?.RemainingGB}
+              total={`${totalDataStorage} GB`}
+              used={totalDataStorage}
+              // free={totalStorage - totalDataStorage}
+              segments={dataSegments}
               details={dataStorage}
+              upgradeContent={
+                <>
+                  <h3>Upgrade to Cloud+</h3>
+                  <p>
+                    Upgrade to Cloud+ to get even more storage and enhanced privacy
+                    features that protect you and your data.
+                  </p>
+                  <a href="#">Upgrade for ₹75.00/month</a>
+                </>
+              }
             />
             
             <StorageAccordion
               title="File Storage"
-              color="purple"
               isOpen={openSection.files}
               onToggle={() => toggle("files")}
-              total="10 GB"
-              used="6.2 GB"
-              free="3.8 GB"
+              total={`${totalFilStorage} GB`}
+              used={totalFilStorage}
+              // free={totalStorage - totalFilStorage}
+              segments={[
+                {
+                  percent: totalFilStorage * 100,
+                  color: "#007AFF",
+                },
+              ]}
               // details={fileStorage}
+              isExpandable={false}
             />
           </div>
 
@@ -109,7 +148,18 @@ const CloudStorage = ({ clientIp, LUId }) => {
 
 export default CloudStorage;
 
-const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free, details = [], }) => {
+const StorageAccordion = ({
+  title,
+  isOpen,
+  onToggle,
+  total,
+  used,
+  // free,
+  segments = [],
+  details = [],
+  isExpandable = true,
+  upgradeContent = null,
+}) => {
   return (
     <div className="storage-accordion">
         <div className="accordion-all-wrapper">
@@ -123,57 +173,61 @@ const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free, d
               </div>
 
               <div className="storage-summary">
-                <span className="storage-free">Available {free} GB</span>
-                <span className="dot-separator">·</span>
+                {/* <span className="storage-free">Available {free} GB</span>
+                <span className="dot-separator">·</span> */}
                 <span className="storage-used-text">Used {used} GB</span>
               </div>
             </div>
 
             {/* BAR */}
-            <div className={`storage-bar ${color}`}>
-              <div className="storage-used" />
-              <div className="storage-system" />
-              <div className="storage-free" />
+            <div className="storage-bar">
+              {segments.map((seg, index) => (
+                <div
+                  key={index}
+                  className="storage-segment"
+                  style={{
+                    width: `${seg.percent}%`,
+                    backgroundColor: seg.color,
+                  }}
+                />
+              ))}
             </div>
           </div>
 
-          <div className="icloud-upgrade-card">
-                <h3>Upgrade to Cloud+</h3>
-                <p>
-                  Upgrade to Cloud+ to get even more storage and enhanced privacy
-                  features that protect you and your data.
-              </p>
-              <a href="#">Upgrade for ₹75.00/month</a>
-          </div>
+          {upgradeContent && (
+            <div className="icloud-upgrade-card">
+              {upgradeContent}
+            </div>
+          )}
 
-          <div className="accrodian-last">
-            <div className="storage-free">View Details</div>
-            <div className={`chevron ${isOpen ? "open" : ""}`} onClick={onToggle} />
-          </div>
+          {isExpandable && (
+            <div className="accrodian-last">
+              <div className="storage-free">View Details</div>
+              <div
+                className={`chevron ${isOpen ? "open" : ""}`}
+                onClick={onToggle}
+              />
+            </div>
+          )}
         </div>
 
         {/* EXPANDABLE CONTENT */}
-        {isOpen && (
+        {isExpandable && isOpen && (
           <div className="accordion-body">
-            {/* STORAGE LIST */}
             <div className="storage-list">
-            {/* {details.length === 0 ? (
-              <div className="empty-text">No details available</div>
-            ) : (
-              details.map((item, index) => (
-                <StorageRow
-                  key={index}
-                  label={item.ModuleName}
-                  size={item.Usage}
-                  dot="orange"
-                />
-              ))
-            )} */}
-              <StorageRow label="SALES" size="4.43 GB" dot="orange" />
-              {/* <StorageRow label="Mail" size="45.5 MB" dot="blue" />
-              <StorageRow label="Messages" size="143.9 KB" dot="green" /> */}
+              {details.length === 0 ? (
+                <div className="empty-text">No details available</div>
+              ) : (
+                details.map((item, index) => (
+                  <StorageRow
+                    key={index}
+                    label={item.ModuleName}
+                    size={item.datausage}
+                    color={generateColorByIndex(index, details.length)}
+                  />
+                ))
+              )}
             </div>
-
           </div>
         )}
       </div>
@@ -181,15 +235,15 @@ const StorageAccordion = ({ title, isOpen, onToggle, color, total, used, free, d
   );
 };
 
-const StorageRow = ({ label, size, dot }) => (
+const StorageRow = ({ label, size, color }) => (
   <div className="storage-row">
     <div className="storage-left">
       <span>{label}</span>
     </div>
-    <div className="storage-middle">All files</div>
+
     <div className="storage-right">
-      <span>{size}</span>
-      <span className={`dot ${dot}`} />
+      <span>{size} GB</span>
+      <span className="dot" style={{ backgroundColor: color }} />
     </div>
   </div>
 );

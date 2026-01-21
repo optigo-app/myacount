@@ -7,7 +7,7 @@ const Addons = () => {
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      {/* <div style={{ display: "flex", justifyContent: "center" }}>
         <div style={{ width: "80%", display: "flex", flexDirection: "column", }}>
 
           <div style={{ }}>
@@ -37,8 +37,8 @@ const Addons = () => {
             </div>
           )}
         </div>
-      </div>
-      {/* <div
+      </div> */}
+      <div
         style={{
           flex: 1,
           minHeight: "55vh",
@@ -59,7 +59,7 @@ const Addons = () => {
           }}
         >
 
-          {/* TITLE 
+          {/* TITLE */}
           <div
             style={{
               fontSize: "30px",
@@ -71,7 +71,7 @@ const Addons = () => {
             Coming Soon
           </div>
 
-          {/* DESCRIPTION 
+          {/* DESCRIPTION */}
           <div
             style={{
               fontSize: "12px",
@@ -83,7 +83,7 @@ const Addons = () => {
             This section will be available very soon.
           </div>
         </div>
-      </div> */}
+      </div>
 
       {inactiveAddons.length > 0 && (
         <div style={{ background: "#f5f5f7", padding: "0.1% 9.5%", paddingBottom: "2.5%" }}>

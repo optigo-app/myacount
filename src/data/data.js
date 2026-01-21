@@ -83,7 +83,7 @@ export const cloudStorageData = {
       id: "whatsapp",
       name: "WhatsApp Integration",
       description: "Connect with customers on WhatsApp to send offers, order updates, invoices, and reminders instantly. Increase engagement, speed up follow-ups, and boost conversions with powerful, automated WhatsApp messaging integrated into Optigo.",
-      active: true,
+      active: false,
       icon: planOptigoIcon,
     },
     {
@@ -97,7 +97,7 @@ export const cloudStorageData = {
       id: "einvoice",
       name: "E-Invoice – Government Portal Integration",
       description: "Generate and upload e-invoices directly to the government portal from Optigo. Ensure GST compliance, real-time IRN generation, error-free reporting, faster billing, and seamless integration without manual uploads or data duplication.",
-      active: true,
+      active: false,
       icon: planOptigoIcon,
     },
     {
