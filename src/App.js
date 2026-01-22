@@ -46,22 +46,22 @@ const App = () => {
     bootstrap();
   }, []);
   
-  // useEffect(() => {
-  //   const clearOtp = () => {
-  //     sessionStorage.removeItem("otp_verified");
-  //   };
-  //   window.addEventListener("blur", clearOtp);  
-  //   document.addEventListener("visibilitychange", () => {
-  //     if (document.visibilityState === "hidden") {
-  //       clearOtp();
-  //     }
-  //   });
+  useEffect(() => {
+    const clearOtp = () => {
+      sessionStorage.removeItem("otp_verified");
+    };
+    window.addEventListener("blur", clearOtp);  
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        clearOtp();
+      }
+    });
   
-  //   return () => {
-  //     window.removeEventListener("blur", clearOtp);
-  //     document.removeEventListener("visibilitychange", clearOtp);
-  //   };
-  // }, []);
+    return () => {
+      window.removeEventListener("blur", clearOtp);
+      document.removeEventListener("visibilitychange", clearOtp);
+    };
+  }, []);
 
   if (!bootstrapped || !minDelayDone) {
     return <AppLoader text="Loading..." />;
