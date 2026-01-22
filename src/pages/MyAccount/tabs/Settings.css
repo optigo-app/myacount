@@ -151,7 +151,7 @@
 .drawer-open {
   transform: translateX(0);
   width: 30%;
-  height: 93.95%;
+  height: 100%;
 }
 
 .drawer-header {
