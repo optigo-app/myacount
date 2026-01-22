@@ -81,7 +81,7 @@ const YourPlan = () => {
           </div>
           <div className="icloudplus-grid">
             {/* LEFT LARGE */}
-            <div className="icloudplus-card large">
+            <div className="icloudplus-card large" style={{ height: "fit-content" }}>
               <img src={planOptigoIcon} alt="" style={{ width: "6%", height: "8%" }} />
               <h3>Pro+ Factory</h3>
               <p>Access automation, in-depth reporting, and a wide range of enhanced features.</p>
